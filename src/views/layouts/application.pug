@@ -1,0 +1,17 @@
+//- include /mixins/forms.pug
+//- - const msg = flash.get()
+
+doctype html
+html(lang="en")
+  head
+    meta(charset='utf-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
+    title= title ? title : 'Water Stats - application for water consumption accounting'
+    script(src='/assets/app.js')
+    script(src='/assets/vendors.app.js')
+  body
+    //- include navBar.pug
+    //- if msg
+    //-   .container
+    //-     .alert.alert-info.m-3= msg
+    block content
