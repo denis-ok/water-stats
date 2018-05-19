@@ -11,21 +11,9 @@ import methodOverride from 'koa-override';
 // import Rollbar from 'rollbar';
 import path from 'path';
 import dotenv from 'dotenv';
-import colors from 'colors';
+import colors from './utils/colors';
 import addRoutes from './routes';
 
-colors.setTheme({
-  silly: 'rainbow',
-  input: 'grey',
-  verbose: 'cyan',
-  prompt: 'grey',
-  info: 'green',
-  data: 'grey',
-  help: 'cyan',
-  warn: 'yellow',
-  debug: 'blue',
-  error: 'red',
-});
 
 const env = process.env.NODE_ENV || 'development';
 dotenv.config();
