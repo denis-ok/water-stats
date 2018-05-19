@@ -1,5 +1,5 @@
-//- include /mixins/forms.pug
-//- - const msg = flash.get()
+include /mixins/forms.pug
+- const msg = flash.get() || flashNowMsg
 
 doctype html
 html(lang="en")
@@ -11,7 +11,7 @@ html(lang="en")
     script(src='/assets/vendors.app.js')
   body
     //- include navBar.pug
-    //- if msg
-    //-   .container
-    //-     .alert.alert-info.m-3= msg
+    if msg
+      .container
+        .alert.alert-info.m-3= msg
     block content

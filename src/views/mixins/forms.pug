@@ -1,0 +1,56 @@
+//- - const getInputName = (formObj, property) => `${formObj.name}[${property}]`
+
+
+mixin formFor(options = {})
+  - const method = options.method.toLowerCase();
+  - const url = options.url.toLowerCase();
+  - const isStandart = ['get', 'post'].includes(method);
+  form(action= url method= isStandart ? method : 'post')
+    if !isStandart
+      input(name='_method' type='hidden' value= method)
+    block
+
+
+mixin input(formObj, property, label, options = { as: 'text' })
+  - const value = formObj.object[property] === undefined || property === 'password' ? '' : formObj.object[property]
+  .form-group
+    label= label
+    input(name=property class='form-control' type=options.as value=`${value}`)
+    if formObj.errors[property]
+      .form-control-feedback= formObj.errors[property].map(({ message }) => message).join('. ')
+
+
+
+mixin button(value = 'Submit', type = 'submit')
+  .form-group.pt-3
+    input(class='btn btn-primary btn-block' type=`${type}` value=`${value}`)
+
+
+mixin dropdownStatuses(statuses, additionalValue, firstValue)
+  .form-group
+    label status
+    select.form-control(name= 'status')
+      if firstValue
+        option= firstValue
+      if additionalValue
+        option= additionalValue
+      if statuses.length > 0
+        each status in statuses
+          option= status.name
+
+mixin dropdownUsers(users, additionalValue, firstValue)
+  .form-group
+    label assigned to
+    select.form-control(name= 'worker')
+      if firstValue
+        option= firstValue
+      if additionalValue
+        option= additionalValue
+      if users.length > 0
+        each user in users
+          option= `${user.id} | ${user.getFullname()} | ${user.email}`
+
+mixin singleCheckbox(key, value, label, condition)
+  .form-group.form-check
+    input.form-check-input(type='checkbox' name=key value=value checked=condition ? true : false)
+    label.form-check-label= label
