@@ -8,7 +8,6 @@ import flash from 'koa-flash-simple';
 import session from 'koa-session';
 import debugLib from 'debug';
 import methodOverride from 'koa-override';
-// import Rollbar from 'rollbar';
 import path from 'path';
 import dotenv from 'dotenv';
 import colors from './utils/colors';
@@ -36,9 +35,7 @@ export default () => {
   });
 
   app.on('error', (err, ctx) => {
-    debugLog('Render error view');
-
-    ctx.status = err.status;
+    debugLog('Showing error page');
     switch (ctx.status) {
       case 404:
         ctx.render('errors/index', { err });
