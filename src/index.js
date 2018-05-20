@@ -12,6 +12,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import colors from './utils/colors';
 import addRoutes from './routes';
+import { User } from './models';
 
 
 const env = process.env.NODE_ENV || 'development';
@@ -32,6 +33,11 @@ export default () => {
       ctx.status = err.status || 500;
       ctx.app.emit('error', err, ctx);
     }
+  });
+
+  app.use(async (ctx, next) => {
+    debugLog(colors.info('ctx.session', ctx.session));
+    await next();
   });
 
   app.on('error', (err, ctx) => {
@@ -55,11 +61,36 @@ export default () => {
   app.use(async (ctx, next) => {
     ctx.state = {
       flash: ctx.flash,
-      isSignedIn: () => ctx.session.userId !== undefined,
-      getUserId: () => ctx.session.userId,
+      isUserSignedIn: () => ctx.session.userId !== undefined,
+      // getUserId: () => ctx.session.userId,
     };
+
     await next();
   });
+
+  app.use(async (ctx, next) => {
+    if (!ctx.state) {
+      ctx.state = {};
+    }
+
+    let currentUser;
+
+    if (ctx.session.userId) {
+      currentUser = await User.findById(ctx.session.userId);
+      const role = await currentUser.getRole();
+      currentUser.role = role.name;
+      currentUser.isAdmin = () => role.name === 'admin';
+    }
+
+    ctx.state.currentUser = currentUser;
+    await next();
+  });
+
+  app.use(async (ctx, next) => {
+    debugLog(colors.info('ctx.state', ctx.state));
+    await next();
+  });
+
 
   app.use(bodyParser());
   app.use(serve(path.join(__dirname, '..', 'public')));

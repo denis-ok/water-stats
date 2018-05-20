@@ -10,7 +10,11 @@ html(lang="en")
     script(src='/assets/app.js')
     script(src='/assets/vendors.app.js')
   body
-    //- include navBar.pug
+    if currentUser && currentUser.isAdmin()
+      include adminNavBar.pug
+
+    include navBar.pug
+
     if msg
       .container
         .alert.alert-info.m-3= msg

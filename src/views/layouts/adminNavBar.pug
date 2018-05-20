@@ -1,0 +1,20 @@
+nav.navbar.navbar-expand-lg.navbar-dark.bg-dark.border-bottom.p-3.px-md-4
+  a.navbar-brand(href='/') Admin Panel
+  #navbarSupportedContent.collapse.navbar-collapse
+    ul.navbar-nav.mr-auto
+
+    ul.navbar-nav
+      li.nav-item.active.px-2
+        a.btn.btn-outline-success(href='#') All Meters
+      li.nav-item.active.px-2
+        a.btn.btn-outline-success(href='#') All Users
+      li.nav-item.active.px-2
+        a.btn.btn-outline-info(href='#') Add User
+      li.nav-item.dropdown
+        a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown')
+          | Profile
+        .dropdown-menu.dropdown-menu-right(aria-labelledby='navbarDropdown')
+          a.dropdown-item(href='#') View Profile
+          a.dropdown-item(href='#') Edit Profile
+          .dropdown-divider
+          a.dropdown-item(href=urlFor('sessionDelete') data-method='delete' rel='nofollow') Sign Out
