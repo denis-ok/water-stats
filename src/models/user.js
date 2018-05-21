@@ -62,10 +62,14 @@ const dataTypes = {
     },
     validate: {
       len: {
-        args: [6, +Infinity],
-        msg: 'Please use a longer password (6 or more symbols)',
+        args: [4, +Infinity],
+        msg: 'Please use a longer password (4 or more symbols)',
       },
     },
+  },
+  roleId: {
+    type: Sequelize.INTEGER,
+    defaultValue: 2,
   },
   address: {
     type: Sequelize.STRING,
@@ -79,6 +83,7 @@ export default (sequelize, DataTypes) => {
     email: dataTypes.email,
     passwordEncrypted: dataTypes.passwordEncrypted,
     password: dataTypes.password,
+    roleId: dataTypes.roleId,
     address: dataTypes.address, // temporary parameter, should be an entity model
   });
 
@@ -88,6 +93,15 @@ export default (sequelize, DataTypes) => {
 
   User.prototype.getFullname = function(models) {
     return [this.firstName, this.lastName].join(' ');
+  };
+
+  User.prototype.hasUpdatedProfile = function(models) {
+    return this.createdAt !== this.updatedAt;
+  };
+
+  User.prototype.hasDefaultPassword = function(models) {
+    const defaultPassword = `${this.firstName}${this.lastName}`.toLowerCase();
+    return encrypt(defaultPassword) === this.passwordEncrypted;
   };
 
   return User;

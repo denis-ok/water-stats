@@ -37,25 +37,22 @@ const addUsers = async () => {
 
   await admin.setRole(1);
 
-  const user1 = await User.create({
+  await User.create({
     firstName: 'Sergey',
     lastName: 'Popov',
     email: 'popov@gmail.com',
-    password: process.env.WM_PASSWORD,
+    password: 'sergeypopov',
     address: 'Moscow',
   });
 
-  await user1.setRole(2);
 
-  const user2 = await User.create({
+  await User.create({
     firstName: 'Vladimir',
     lastName: 'Surdin',
     email: 'surdin@mail.ru',
     password: process.env.WM_PASSWORD,
     address: 'Sochi',
   });
-
-  await user2.setRole(2);
 };
 
 export { initModels, addRoles, addUsers };
