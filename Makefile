@@ -13,10 +13,6 @@ start-debug-index:
 start-debug-users:
 	DEBUG=app:users* npm run nodemon -- --watch . --ext '.js, .pug' --exec babel-node ./src/start.js
 
-start-heroku:
-	make db-migrate
-	make start
-
 db-migrate:
 	npm run sequelize -- db:migrate
 
@@ -25,6 +21,10 @@ deploy:
 
 build-webpack:
 	npm run webpack
+
+start-heroku:
+	make build-webpack
+	make start
 
 test:
 	npm test
