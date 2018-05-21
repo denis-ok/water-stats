@@ -35,11 +35,6 @@ export default () => {
     }
   });
 
-  app.use(async (ctx, next) => {
-    debugLog(colors.info('ctx.session', ctx.session));
-    await next();
-  });
-
   app.on('error', (err, ctx) => {
     debugLog('Showing error page');
     switch (ctx.status) {
@@ -62,7 +57,7 @@ export default () => {
     ctx.state = {
       flash: ctx.flash,
       isUserSignedIn: () => ctx.session.userId !== undefined,
-      // getUserId: () => ctx.session.userId,
+      getUserId: () => ctx.session.userId,
     };
 
     await next();
@@ -86,17 +81,12 @@ export default () => {
     await next();
   });
 
-  app.use(async (ctx, next) => {
-    debugLog(colors.info('ctx.state', ctx.state));
-    await next();
-  });
-
-
   app.use(bodyParser());
   app.use(serve(path.join(__dirname, '..', 'public')));
   app.use(methodOverride());
 
   const router = new Router();
+
   addRoutes(router);
 
   app.use(router.allowedMethods());
