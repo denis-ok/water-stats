@@ -22,10 +22,6 @@ deploy:
 build-webpack:
 	npm run webpack
 
-start-heroku:
-	make build-webpack
-	make start
-
 test:
 	npm test
 
@@ -38,3 +34,6 @@ test-coverage:
 lint:
 	npm run eslint .
 
+start-heroku:
+	make build-webpack
+	make start-debug

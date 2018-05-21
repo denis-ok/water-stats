@@ -5,11 +5,11 @@ import { User, Role } from './models';
 const initModels = async () => {
   dotenv.config();
 
-  Role.hasMany(User, { foreignKey: 'roleId', as: 'Role' });
-  User.belongsTo(Role, { foreignKey: 'roleId', as: 'Role' });
-
   await User.sync({ force: true });
   await Role.sync({ force: true });
+
+  Role.hasMany(User, { foreignKey: 'roleId', as: 'Role' });
+  User.belongsTo(Role, { foreignKey: 'roleId', as: 'Role' });
 };
 
 
@@ -28,10 +28,10 @@ const addRoles = async () => {
 
 const addUsers = async () => {
   const admin = await User.create({
-    firstName: 'Denis',
-    lastName: 'Strelkov',
-    email: 'strelkov.d.d@mail.ru',
-    password: process.env.WM_PASSWORD,
+    firstName: 'John',
+    lastName: 'Brown',
+    email: 'admin@admin.ru',
+    password: process.env.WM_PASSWORD || 'qqqqqq',
     address: 'Zelenograd',
   });
 
@@ -50,7 +50,7 @@ const addUsers = async () => {
     firstName: 'Vladimir',
     lastName: 'Surdin',
     email: 'surdin@mail.ru',
-    password: process.env.WM_PASSWORD,
+    password: 'qqqqqq',
     address: 'Sochi',
   });
 };
