@@ -1,0 +1,32 @@
+extends /layouts/application.pug
+
+block content
+  .container
+    .py-4.text-center
+      h2 Users List
+
+  .container.mt-4
+    .table-responsive
+      table.table
+        thead
+          tr
+            th Fullname
+            th Email
+            th Role
+            th Actions
+        tbody
+          if users
+            each user in users
+              tr
+                td= user.getFullname()
+                td= user.email
+                td= user.Role.name
+                td
+                  a.btn.btn-success.btn-sm.m-1(href=urlFor('userProfile', user.id)) View
+                  a.btn.btn-primary.btn-sm.m-1(href='#') Edit
+                  if user.Role.name === 'user'
+                    a.btn.btn-danger.btn-sm.m-1(href=urlFor('deleteUser', user.id) data-method='delete' data-confirm='Are you sure you want to delete user?') Del
+
+
+ 
+

@@ -13,9 +13,11 @@ html(lang="en")
     if currentUser && currentUser.isAdmin()
       include adminNavBar.pug
 
-    include navBar.pug
+    else
+      include navBar.pug
 
     if msg
       .container
         .alert.alert-info.m-3= msg
+
     block content

@@ -1,0 +1,13 @@
+extends /layouts/application.pug
+
+block content
+  .container.mb-4
+    .py-4.text-center
+      h2 Add New User
+
+  .container.col-md-4
+    +formFor({ url: urlFor('users'), method: 'post' })
+      +input(formObj, 'email', 'E-mail (as login)')
+      +input(formObj, 'firstName', 'Firstname')
+      +input(formObj, 'lastName', 'Lastname')
+      +button('Submit')

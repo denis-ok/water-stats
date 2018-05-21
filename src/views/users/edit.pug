@@ -1,0 +1,19 @@
+extends /layouts/application.pug
+
+block content
+  .container
+    .py-4.text-center
+      if currentUser.hasDefaultPassword()
+        h2 Change Password
+        p.h6
+          | Please change default password to use application
+      else
+        h2 Edit Profile
+        p.h6
+          | You can edit your profile here
+
+  .container.col-md-4
+    +formFor({ url: urlFor('patchUser', getUserId()), method: 'patch' })
+      +input(formObj, 'password', 'New Password', { as: 'password'})
+      +input(formObj, 'confirmPassword', 'Confirm New Password', { as: 'password'})
+      +button('Submit')
