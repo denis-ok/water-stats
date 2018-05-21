@@ -1,6 +1,6 @@
 {
   "name": "water-stats",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "app for water consumption statistics",
   "main": "index.js",
   "private": true,
