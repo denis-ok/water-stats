@@ -19,7 +19,7 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-light.border-bottom.p-3.px-md-4
             a.dropdown-item(href=urlFor('userProfile', getUserId())) View Profile
             a.dropdown-item(href=urlFor('editUser', getUserId())) Edit Profile
             .dropdown-divider
-            a.dropdown-item(href=urlFor('sessionDelete') data-method='delete' rel='nofollow') Sign Out
+            a.dropdown-item(href=urlFor('deleteSession') data-method='delete' rel='nofollow') Sign Out
       else
         li.nav-item.px-2
           a.nav-link(href=urlFor('newSession')) Sign In
