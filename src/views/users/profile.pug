@@ -1,9 +1,11 @@
 extends /layouts/application.pug
 
 block content
-  .container
+  .container.my-4
     .py-4.text-center
-      h2= user.getFullname()
+      h2.mb-4= user.getFullname()
+      h4 Address:
+      p=`House: ${user.Address.house}, Flat: ${user.Address.flat}`
 
 
   .container

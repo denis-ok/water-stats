@@ -15,6 +15,10 @@ const numFieldValidation = {
     args: 9999,
     msg: 'House or flat number can be between 1 and 9999'
   },
+  notEmpty: {
+    args: true,
+    msg: 'Field cannot be empty'
+  },
 };
 
 export default (sequelize, DataTypes) => {

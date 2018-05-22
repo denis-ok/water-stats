@@ -7,7 +7,16 @@ block content
 
   .container.col-md-4
     +formFor({ url: urlFor('users'), method: 'post' })
-      +input(formObj, 'email', 'E-mail (as login)')
-      +input(formObj, 'firstName', 'Firstname')
-      +input(formObj, 'lastName', 'Lastname')
+      +input(formObjUser, 'email', 'E-mail (as login)')
+      +input(formObjUser, 'firstName', 'Firstname')
+      +input(formObjUser, 'lastName', 'Lastname')
+
+      h4.text-center.my-4 User address
+      
+      .row
+        .container.col-sm
+          +input(formObjAddr, 'house', 'House number')
+        .container.col-sm
+          +input(formObjAddr, 'flat', 'Flat number')
+
       +button('Submit')

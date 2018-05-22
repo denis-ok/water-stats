@@ -11,6 +11,8 @@ block content
         thead
           tr
             th Fullname
+            th House
+            th Flat
             th Email
             th Role
             th Actions
@@ -19,6 +21,8 @@ block content
             each user in users
               tr
                 td= user.getFullname()
+                td= user.Address.house
+                td= user.Address.flat
                 td= user.email
                 td= user.Role.name
                 td

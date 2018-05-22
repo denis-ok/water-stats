@@ -1,6 +1,6 @@
 import debugLib from 'debug';
 import buildFormObj from '../utils/formObjectBuilder';
-import { User, Role } from '../models';
+import { Address, User, Role } from '../models';
 
 const debugLog = debugLib('app:controllers:users.js');
 
@@ -10,6 +10,10 @@ const showOneUser = async (ctx) => {
     where: {
       id,
     },
+    include: [{
+      model: Address,
+      as: 'Address',
+    }],
   });
 
   ctx.render('users/profile', { user, formObj: buildFormObj(user), title: 'Edit Profile' });
@@ -20,6 +24,9 @@ const showAllUsers = async (ctx) => {
     include: [{
       model: Role,
       as: 'Role',
+    }, {
+      model: Address,
+      as: 'Address',
     }],
   });
 
@@ -28,7 +35,13 @@ const showAllUsers = async (ctx) => {
 
 const showFormNewUser = async (ctx) => {
   const user = await User.build();
-  ctx.render('users/new', { formObj: buildFormObj(user), title: 'Add new user' });
+  const address = await Address.build();
+
+  ctx.render('users/new', {
+    formObjUser: buildFormObj(user),
+    formObjAddr: buildFormObj(address),
+    title: 'Add new user',
+  });
 };
 
 const showFormEditUser = async (ctx) => {
@@ -49,15 +62,38 @@ const createUser = async (ctx) => {
   const defaultPassword = `${form.firstName}${form.lastName}`.toLowerCase();
   form.password = defaultPassword;
 
-  const user = User.build(form);
+  const user = await User.build(form);
+  const address = await Address.build(form);
+
+  const userFull = User.build({
+    firstName: form.firstName,
+    lastName: form.lastName,
+    email: form.email,
+    password: form.password,
+    Address: {
+      house: form.house,
+      flat: form.flat,
+    },
+  }, {
+    include: [{
+      model: Address,
+      as: 'Address',
+    }],
+  });
+
 
   try {
-    await user.save();
+    await userFull.save();
+
     ctx.flash.set('User has been created');
     ctx.redirect('/');
   } catch (e) {
     debugLog('\nERROR:\n', e);
-    ctx.render('users/new', { formObj: buildFormObj(user, e), title: 'Add new user' });
+    ctx.render('users/new', {
+      formObjUser: buildFormObj(user, e),
+      formObjAddr: buildFormObj(address, e),
+      title: 'Add new user',
+    });
   }
 };
 
