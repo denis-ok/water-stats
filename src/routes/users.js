@@ -13,7 +13,7 @@ import {
 
 
 export default (router) => {
-  const checkAuth = checkAuthMw(router, 'You must be logged in to edit profile');
+  const checkAuth = checkAuthMw('You must be logged in to edit profile');
 
   router
     .get('users', '/users', checkAuth, hasAdminRights, showAllUsers)
