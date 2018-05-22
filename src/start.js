@@ -1,7 +1,7 @@
 import debugLib from 'debug';
 import colors from './utils/colors';
 import app from './';
-import { initModels, addRoles, addUsers } from './init';
+import { initModels, addRoles, addUsers, addAddresses } from './init';
 
 const debugLog = debugLib('app:start.js');
 
@@ -12,6 +12,7 @@ const start = async () => {
 
   try {
     await initModels();
+    await addAddresses();
     await addRoles();
     await addUsers();
   } catch (e) {

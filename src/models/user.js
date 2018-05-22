@@ -71,8 +71,8 @@ const dataTypes = {
     type: Sequelize.INTEGER,
     defaultValue: 2,
   },
-  address: {
-    type: Sequelize.STRING,
+  addressId: {
+    type: Sequelize.INTEGER,
   },
 };
 
@@ -84,7 +84,7 @@ export default (sequelize, DataTypes) => {
     passwordEncrypted: dataTypes.passwordEncrypted,
     password: dataTypes.password,
     roleId: dataTypes.roleId,
-    address: dataTypes.address, // temporary parameter, should be an entity model
+    addressId: dataTypes.addressId,
   });
 
   User.associate = function(models) {
