@@ -1,6 +1,7 @@
 extends /layouts/application.pug
 
 block content
+  - const userId = formObjUser.object.id;
   .container
     .py-4.text-center
       if currentUser.hasDefaultPassword()
@@ -13,7 +14,17 @@ block content
           | You can edit your profile here
 
   .container.col-md-4
-    +formFor({ url: urlFor('patchUser', getUserId()), method: 'patch' })
-      +input(formObj, 'password', 'New Password', { as: 'password'})
-      +input(formObj, 'confirmPassword', 'Confirm New Password', { as: 'password'})
+    +formFor({ url: urlFor('patchUser', userId), method: 'patch' })
+      +input(formObjUser, 'email', 'E-mail (as login)')
+      +input(formObjUser, 'firstName', 'First Name')
+      +input(formObjUser, 'lastName', 'Last Name')
+
+      h4.text-center.my-4 User address
+
+      .row
+        .container.col-sm
+          +input(formObjAddr, 'house', 'House number')
+        .container.col-sm
+          +input(formObjAddr, 'flat', 'Flat number')
+
       +button('Submit')
