@@ -13,6 +13,7 @@ import dotenv from 'dotenv';
 import colors from './utils/colors';
 import addRoutes from './routes';
 import { User } from './models';
+import { checkDefaultPassword } from './utils/middlewares';
 
 
 const env = process.env.NODE_ENV || 'development';
@@ -85,10 +86,10 @@ export default () => {
   app.use(serve(path.join(__dirname, '..', 'public')));
   app.use(methodOverride());
 
+  app.use(checkDefaultPassword());
+
   const router = new Router();
-
   addRoutes(router);
-
   app.use(router.allowedMethods());
   app.use(router.routes());
 
