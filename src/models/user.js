@@ -29,7 +29,7 @@ const dataTypes = {
         msg: 'First or Lastname must use only Alphabet letters',
       },
       len: {
-        args: [2, 16],
+        args: [3, 16],
         msg: 'First or Lastname length must be from 2 to 16 letters',
       },
     },
@@ -43,7 +43,7 @@ const dataTypes = {
         msg: 'First or Lastname must use only Alphabet letters',
       },
       len: {
-        args: [2, 16],
+        args: [3, 16],
         msg: 'First or Lastname length must be from 2 to 16 letters',
       },
     },
@@ -62,8 +62,8 @@ const dataTypes = {
     },
     validate: {
       len: {
-        args: [4, +Infinity],
-        msg: 'Please use a longer password (4 or more symbols)',
+        args: [6, 99],
+        msg: 'Please use a longer password (6 or more symbols)',
       },
     },
   },
