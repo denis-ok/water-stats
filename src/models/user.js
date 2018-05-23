@@ -30,7 +30,7 @@ const dataTypes = {
       },
       len: {
         args: [3, 16],
-        msg: 'First or Lastname length must be from 2 to 16 letters',
+        msg: 'First or Lastname length must be from 3 to 16 letters',
       },
     },
   },
@@ -44,7 +44,7 @@ const dataTypes = {
       },
       len: {
         args: [3, 16],
-        msg: 'First or Lastname length must be from 2 to 16 letters',
+        msg: 'First or Lastname length must be from 3 to 16 letters',
       },
     },
   },

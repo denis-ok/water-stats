@@ -4,6 +4,32 @@ import { Address, User, Role } from '../models';
 
 const debugLog = debugLib('app:controllers:users.js');
 
+
+const replaceAddressErrMsg = (e) => {
+  const predicate = str => str === 'house must be unique' || str === 'flat must be unique';
+
+  const replaceMsg = (err) => {
+    const msg = err.message;
+
+    if (predicate(msg)) {
+      const newErr = err;
+      newErr.message = 'Address (house and flat) already used by another user';
+      return newErr;
+    }
+
+    return err;
+  };
+
+  const errObj = e;
+  const errorsArr = errObj.errors;
+  const errorsArrNew = errorsArr.map(err => replaceMsg(err));
+
+  errObj.errors = errorsArrNew;
+
+  return errObj;
+};
+
+
 const showOneUser = async (ctx) => {
   const { id } = ctx.params;
   const user = await User.findOne({
@@ -19,6 +45,7 @@ const showOneUser = async (ctx) => {
   ctx.render('users/profile', { user, formObj: buildFormObj(user), title: 'Edit Profile' });
 };
 
+
 const showAllUsers = async (ctx) => {
   const users = await User.findAll({
     include: [{
@@ -33,7 +60,9 @@ const showAllUsers = async (ctx) => {
   ctx.render('users', { users, title: 'Users List' });
 };
 
+
 const showFormNewUser = async (ctx) => {
+  debugLog('showFormNewUser middleware...');
   const user = await User.build();
   const address = await Address.build();
 
@@ -44,19 +73,58 @@ const showFormNewUser = async (ctx) => {
   });
 };
 
+
 const showFormEditUser = async (ctx) => {
-  const { userId } = ctx.session;
+  debugLog('showFormEditUser middleware...');
 
-  const user = await User.findOne({
-    where: {
-      id: userId,
-    },
+  const { id } = await ctx.params;
+  const user = await User.findById(id);
+  const address = await user.getAddress();
+
+  ctx.render('users/edit', {
+    formObjUser: buildFormObj(user),
+    formObjAddr: buildFormObj(address),
+    title: 'Edit Profile',
   });
-
-  ctx.render('users/edit', { formObj: buildFormObj(user), title: 'Edit Profile' });
 };
 
+
+const hasRightsEditUser = async (ctx, next) => {
+  const { userId } = ctx.session;
+  const { id } = await ctx.params;
+
+  if (Number(userId) === Number(id)) {
+    await next();
+    return;
+  }
+
+  ctx.flash.set('Sorry, you can edit only your own profile');
+  ctx.redirect('/');
+};
+
+
+const checkRights = async (ctx, next) => {
+  const { currentUser } = ctx.state;
+  const profileId = ctx.params.id;
+
+  if (currentUser.isAdmin()) {
+    await next();
+    return;
+  }
+
+  if (Number(currentUser.id) === Number(profileId)) {
+    await next();
+    return;
+  }
+
+  ctx.flash.set('Sorry, you dont have enough rights to do it');
+  ctx.redirect('/');
+  await next();
+};
+
+
 const createUser = async (ctx) => {
+  debugLog('Create User middleware...');
   const form = await ctx.request.body;
 
   const defaultPassword = `${form.firstName}${form.lastName}`.toLowerCase();
@@ -83,73 +151,60 @@ const createUser = async (ctx) => {
 
 
   try {
+    debugLog('Try to save...');
     await userFull.save();
 
     ctx.flash.set('User has been created');
     ctx.redirect('/');
   } catch (e) {
-    debugLog('\nERROR:\n', e);
+    debugLog('Catch error:', e);
     ctx.render('users/new', {
       formObjUser: buildFormObj(user, e),
-      formObjAddr: buildFormObj(address, e),
+      formObjAddr: buildFormObj(address, replaceAddressErrMsg(e)),
       title: 'Add new user',
     });
   }
 };
 
-const hasRightsEditUser = async (ctx, next) => {
-  const { userId } = ctx.session;
-  const { id } = ctx.params;
-
-  if (Number(userId) === Number(id)) {
-    await next();
-    return;
-  }
-
-  ctx.flash.set('Sorry, you can edit only your own profile');
-  ctx.redirect('/');
-};
-
-const checkRights = async (ctx, next) => {
-  const { currentUser } = ctx.state;
-  const profileId = ctx.params.id;
-
-  if (currentUser.isAdmin()) {
-    await next();
-    return;
-  }
-
-  if (Number(currentUser.id) === Number(profileId)) {
-    await next();
-    return;
-  }
-
-  ctx.flash.set('Sorry, you dont have enough rights to do it');
-  ctx.redirect('/');
-  await next();
-};
-
 const updateUser = async (ctx) => {
-  const { userId } = ctx.session;
+  debugLog('Update User middleware...');
 
-  const user = await User.findOne({
-    where: {
-      id: userId,
-    },
-  });
+  const { id } = await ctx.params;
+  const user = await User.findById(id);
+  const address = await user.getAddress();
 
   const form = await ctx.request.body;
-  form.id = userId;
+
+  const userForm = {
+    firstName: form.firstName,
+    lastName: form.lastName,
+    email: form.email,
+  };
+
+  const addressForm = {
+    house: form.house,
+    flat: form.flat,
+  };
+
 
   try {
-    await user.update(form);
-    ctx.flash.set('Your profile has been updated');
-    ctx.redirect('/');
+    debugLog('Try to update...');
+
+    await user.update(userForm);
+    await address.update(addressForm);
+    ctx.flash.set('Profile has been updated');
+    ctx.redirect(['/users/', id, '/edit'].join(''));
   } catch (e) {
-    debugLog('error', e);
-    ctx.render('users/edit', { formObj: buildFormObj(user, e), title: 'Edit Profile' });
+    debugLog('Catch error:', e);
+
+    ctx.render('users/edit', {
+      formObjUser: buildFormObj(user, e),
+      formObjAddr: buildFormObj(address, replaceAddressErrMsg(e)),
+      title: 'Edit User Profile',
+    });
   }
 };
+
 
 const deleteUser = async (ctx) => {
   const { id } = ctx.params;
@@ -176,6 +231,7 @@ const deleteUser = async (ctx) => {
     ctx.redirect('/users');
   }
 };
+
 
 export {
   showOneUser,

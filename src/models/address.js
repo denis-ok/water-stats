@@ -25,22 +25,19 @@ export default (sequelize, DataTypes) => {
   const Address = sequelize.define('Address', {
     house: {
       type: DataTypes.INTEGER,
-      unique: false,
       validate: numFieldValidation,
     },
     flat: {
-      unique: false,
       type: DataTypes.INTEGER,
       validate: numFieldValidation,
     },
   }, {
-    // indexes: [
-    //     {
-    //         unique: true,
-    //         fields: ['house', 'flat'],
-    //         msg: 'This address already used',
-    //     }
-    // ]
+    indexes: [
+        {
+            unique: true,
+            fields: ['house', 'flat'],
+        }
+    ]
 });
 
   Address.associate = function(models) {

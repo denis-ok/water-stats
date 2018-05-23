@@ -4,7 +4,6 @@ import {
   showAllUsers,
   showFormNewUser,
   showFormEditUser,
-  hasRightsEditUser,
   checkRights,
   createUser,
   updateUser,
@@ -18,9 +17,9 @@ export default (router) => {
   router
     .get('users', '/users', checkAuth, hasAdminRights, showAllUsers)
     .get('newUser', '/users/new', checkAuth, hasAdminRights, showFormNewUser)
-    .get('editUser', '/users/:id/edit', checkAuth, checkRights, showFormEditUser)
+    .get('editUser', '/users/:id/edit', checkAuth, hasAdminRights, showFormEditUser)
     .post('users', '/users', checkAuth, hasAdminRights, createUser)
     .get('userProfile', '/users/:id', checkAuth, checkRights, showOneUser)
-    .patch('patchUser', '/users/:id', checkAuth, hasRightsEditUser, updateUser)
+    .patch('patchUser', '/users/:id', checkAuth, checkRights, updateUser)
     .delete('deleteUser', '/users/:id', checkAuth, hasAdminRights, deleteUser);
 };
