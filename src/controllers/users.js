@@ -1,6 +1,6 @@
 import debugLib from 'debug';
 import buildFormObj from '../utils/formObjectBuilder';
-import { Address, User, Role } from '../models';
+import { Address, User, Role, WaterMeter } from '../models';
 
 const debugLog = debugLib('app:controllers:users.js');
 
@@ -142,10 +142,15 @@ const createUser = async (ctx) => {
       house: form.house,
       flat: form.flat,
     },
+    WaterMeters: [{ waterType: 'cold' }, { waterType: 'hot' }],
   }, {
     include: [{
       model: Address,
       as: 'Address',
+    },
+    {
+      model: WaterMeter,
+      as: 'WaterMeters',
     }],
   });
 
@@ -153,6 +158,7 @@ const createUser = async (ctx) => {
   try {
     debugLog('Try to save...');
     await userFull.save();
+
 
     ctx.flash.set('User has been created');
     ctx.redirect('/');
