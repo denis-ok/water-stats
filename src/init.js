@@ -1,5 +1,21 @@
 import dotenv from 'dotenv';
-import { User, Role, Address } from './models';
+import { User, Role, Address, WaterMeter, Readout } from './models';
+
+const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+
+const genRndNum = () => getRandomInt(1, 25);
+
+const genRndValuesArr = (quantity, startValue = 0) => {
+  if (quantity === 0) {
+    return [];
+  }
+
+  const value = genRndNum() + startValue;
+
+  return [value, ...genRndValuesArr(quantity - 1, value)];
+};
+
+const genValues = quantity => genRndValuesArr(quantity).map(n => ({ value: n }));
 
 
 const initModels = async () => {
@@ -8,13 +24,67 @@ const initModels = async () => {
   await User.sync({ force: true });
   await Role.sync({ force: true });
   await Address.sync({ force: true });
+  await WaterMeter.sync({ force: true });
+  await Readout.sync({ force: true });
 
-  Role.hasMany(User, { foreignKey: 'roleId', as: 'Role' });
+  Role.hasMany(User, { foreignKey: 'roleId', as: 'Users' });
   User.belongsTo(Role, { foreignKey: 'roleId', as: 'Role' });
 
   User.belongsTo(Address, { foreignKey: 'addressId', as: 'Address' });
   Address.hasOne(User, { foreignKey: 'addressId', as: 'User' });
+
+  User.hasMany(WaterMeter, { foreignKey: 'userId', as: 'WaterMeters' });
+  WaterMeter.belongsTo(User, { foreignKey: 'userId', as: 'Owner' });
+
+  WaterMeter.hasMany(Readout, { foreignKey: 'waterMeterId', as: 'Readouts' });
+  Readout.belongsTo(WaterMeter, { foreignKey: 'waterMeterId', as: 'WaterMeter' });
+
+  await User.sync({ force: true });
+  await Role.sync({ force: true });
+  await Address.sync({ force: true });
+  await WaterMeter.sync({ force: true });
+  await Readout.sync({ force: true });
 };
+
+
+const addWaterMeters = async () => {
+  await WaterMeter.genTwoWaterMeters();
+  await WaterMeter.genTwoWaterMeters();
+  await WaterMeter.genTwoWaterMeters();
+};
+
+
+const addReadouts = async () => {
+  const readouts1 = await Readout.bulkCreate(genValues(5));
+  const readouts2 = await Readout.bulkCreate(genValues(5));
+
+  const watermeter1 = await WaterMeter.findById(1);
+  const watermeter2 = await WaterMeter.findById(2);
+
+  await watermeter1.setReadouts(readouts1);
+  await watermeter2.setReadouts(readouts2);
+
+
+  const readouts3 = await Readout.bulkCreate(genValues(7));
+  const readouts4 = await Readout.bulkCreate(genValues(7));
+
+  const watermeter3 = await WaterMeter.findById(3);
+  const watermeter4 = await WaterMeter.findById(4);
+
+  await watermeter3.setReadouts(readouts3);
+  await watermeter4.setReadouts(readouts4);
+
+
+  const readouts5 = await Readout.bulkCreate(genValues(9));
+  const readouts6 = await Readout.bulkCreate(genValues(9));
+
+  const watermeter5 = await WaterMeter.findById(5);
+  const watermeter6 = await WaterMeter.findById(6);
+
+  await watermeter5.setReadouts(readouts5);
+  await watermeter6.setReadouts(readouts6);
+};
+
 
 const addAddresses = async () => {
   await Address.create({
@@ -42,7 +112,7 @@ const addRoles = async () => {
 
 
 const addUsers = async () => {
-  await User.create({
+  const user1 = await User.create({
     firstName: 'John',
     lastName: 'Brown',
     email: 'admin@admin.ru',
@@ -51,8 +121,10 @@ const addUsers = async () => {
     roleId: 1,
   });
 
+  await user1.setWaterMeters([1, 2]);
 
-  await User.create({
+
+  const user2 = await User.create({
     firstName: 'Sergey',
     lastName: 'Popov',
     email: 'popov@gmail.com',
@@ -60,24 +132,35 @@ const addUsers = async () => {
     addressId: 2,
   });
 
+  await user2.setWaterMeters([3, 4]);
 
-  await User.create({
+
+  const user3 = await User.create({
     firstName: 'Vladimir',
     lastName: 'Surdin',
     email: 'surdin@mail.ru',
     password: 'qqqqqq',
-    // Create user instance with address assciation at one time
+    // Create user instance with address association at one time
     Address: {
       house: 33,
       flat: 333,
     },
+    // WaterMeters: [{ waterType: 'cold' }, { waterType: 'hot' }],
   }, {
-    include: [{
-      model: Address,
-      as: 'Address',
-    }],
+    include: [
+      {
+        model: Address,
+        as: 'Address',
+      },
+      // {
+      //   model: WaterMeter,
+      //   as: 'WaterMeters',
+      // },
+    ],
   });
+
+  await user3.setWaterMeters([5, 6]);
 };
 
 
-export { initModels, addRoles, addUsers, addAddresses };
+export { initModels, addRoles, addUsers, addAddresses, addWaterMeters, addReadouts };
