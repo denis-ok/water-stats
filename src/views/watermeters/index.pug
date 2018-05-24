@@ -1,0 +1,27 @@
+extends /layouts/application.pug
+
+block content
+  .container
+    .py-4.text-center
+      h2 Water Meters List
+
+  .container.mt-4
+    .table-responsive
+      table.table
+        thead
+          tr
+            th Owner
+            th Water Type
+            th Date Added
+        tbody
+          if watermeters
+            each watermeter in watermeters
+              tr
+                td= watermeter.Owner.getFullname()
+                td= watermeter.waterType
+                td= watermeter.createdAt
+
+
+
+ 
+
