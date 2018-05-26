@@ -1,0 +1,36 @@
+extends /layouts/application.pug
+
+block content
+  .container
+    .py-4.text-center
+      h2 Water Meter Readouts
+
+  .container.mt-4
+    .table-responsive
+      table.table.table-hover
+        thead
+          tr
+            //- th Number
+            th Month
+            th Cold Meter Value
+            th Consumption
+            th Hot Meter Value
+            th Consumption
+            th Year
+            th Readout ID
+        
+
+        tbody
+          if readouts
+            each readout, index in readouts
+              tr
+                //- td= index + 1
+                //- td= readout.id
+                td= readout.cold.getMonth()
+                td.text-primary= readout.cold.value
+                td.text-primary= `+ ${readout.cold.diffValue}`
+                td.text-danger= readout.hot.value
+                td.text-danger= `+ ${readout.hot.diffValue}`
+                td= readout.cold.getYear()
+                td= `${readout.cold.id}-${readout.cold.id}`
+                

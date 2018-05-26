@@ -1,0 +1,14 @@
+extends /layouts/application.pug
+
+block content
+  .container.mb-4
+    .py-4.text-center
+      h2 Add Readouts
+        p.h6 Please type current values of your watermeters
+
+
+  .container.col-md-4
+    +formFor({ url: '#', method: 'post' })
+      +input(formObj, 'readoutCold', 'Cold Readout')
+      +input(formObj, 'readoutHot', 'Hot Readout')
+      +button('Submit')
