@@ -27,9 +27,24 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       validate: numFieldValidation,
     },
+    date: {
+      type: DataTypes.DATE,
+    },
   }, {});
 
   Readout.associate = function(models) {
+  };
+
+  Readout.prototype.getYear = function() {
+    const date = new Date(this.date);
+    const month = date.toLocaleString('en-US', { year: 'numeric' });
+    return month;
+  };
+
+  Readout.prototype.getMonth = function() {
+    const date = new Date(this.date);
+    const month = date.toLocaleString('en-US', { month: 'long' });
+    return month;
   };
 
   return Readout;
