@@ -1,10 +1,10 @@
-import debugLib from 'debug';
+// import debugLib from 'debug';
 import { WaterMeter, User } from '../models';
 import buildFormObj from '../utils/formObjectBuilder';
 import { addDiffValuesDesc } from '../utils/addDiffValues';
 
 
-const debugLog = debugLib('app:controllers:watermeters');
+// const debugLog = debugLib('app:controllers:watermeters');
 
 const showAllWatermeters = async (ctx) => {
   const watermeters = await WaterMeter.findAll({
@@ -26,7 +26,7 @@ const renderAddReadoutsView = async (ctx) => {
 const renderWatermetersUser = async (ctx) => {
   const userId = ctx.params.id;
   const user = await User.findById(userId);
-  debugLog('user:', user);
+
   if (!user) {
     ctx.flash.set('User not exist');
     ctx.redirect('/');
@@ -45,7 +45,6 @@ const renderWatermetersUser = async (ctx) => {
 
   const readoutsHot = await wmHot.getReadouts(options);
   const readoutsHotWithDiff = addDiffValuesDesc(readoutsHot);
-
 
   const coll = readoutsColdWithDiff.map((r, i) => ({ cold: r, hot: readoutsHotWithDiff[i] }));
 

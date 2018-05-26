@@ -30,6 +30,9 @@ export default (sequelize, DataTypes) => {
     date: {
       type: DataTypes.DATE,
     },
+    waterMeterId: {
+      type: DataTypes.INTEGER,
+    },
   }, {});
 
   Readout.associate = function(models) {
