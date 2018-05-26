@@ -6,6 +6,23 @@ import { addDiffValuesDesc } from '../utils/addDiffValues';
 
 // const debugLog = debugLib('app:controllers:watermeters');
 
+const attachPropsToWatermeter = async (watermeter) => {
+  const wm = watermeter;
+
+  const periodsCount = await wm.getPeriodsCount();
+  const avgCons = await wm.getAverageMonthlyConsumption();
+  const totalConsumption = await wm.getTotalConsumption();
+
+  wm.periodsCount = periodsCount;
+  wm.averageMonthlyConsumption = avgCons;
+  wm.totalConsumption = totalConsumption;
+
+  return wm;
+};
+
+const attachPropsToWatermeterColl = wmColl =>
+  Promise.all(wmColl.map(wm => attachPropsToWatermeter(wm)));
+
 const showAllWatermeters = async (ctx) => {
   const watermeters = await WaterMeter.findAll({
     include: [{
@@ -46,9 +63,12 @@ const renderWatermetersUser = async (ctx) => {
   const readoutsHot = await wmHot.getReadouts(options);
   const readoutsHotWithDiff = addDiffValuesDesc(readoutsHot);
 
+  const watermeters = await attachPropsToWatermeterColl([wmCold, wmHot]);
+
+
   const coll = readoutsColdWithDiff.map((r, i) => ({ cold: r, hot: readoutsHotWithDiff[i] }));
 
-  ctx.render('watermeters/show', { readouts: coll, title: 'Stats' });
+  ctx.render('watermeters/show', { watermeters, readouts: coll, title: 'Stats' });
 };
 
 

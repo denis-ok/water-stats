@@ -3,12 +3,34 @@ extends /layouts/application.pug
 block content
   .container
     .py-4.text-center
-      h2 Water Meter Readouts
+      h2 Water Meter Statistics
 
   .container.mt-4
+    h4.mb-4.text-center Overall
     .table-responsive
       table.table.table-hover
-        thead
+        thead.thead-light
+          tr
+            th Water
+            th Average Monthly Consumption
+            th Total Consumption
+            th Count of periods 
+
+        tbody
+          if watermeters
+            each watermeter in watermeters
+              tr(class= (watermeter.waterType === 'cold' ? 'text-primary' : 'text-danger'))
+                td= watermeter.waterType
+                td= watermeter.averageMonthlyConsumption
+                td= watermeter.totalConsumption
+                td= watermeter.periodsCount
+
+
+  .container.mt-4
+    h4.mb-4.text-center Readouts
+    .table-responsive
+      table.table.table-hover
+        thead.thead.thead-light
           tr
             //- th Number
             th Month
