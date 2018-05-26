@@ -26,7 +26,8 @@ block content
                 td= user.email
                 td= user.Role.name
                 td
-                  a.btn.btn-success.btn-sm.m-1(href=urlFor('userProfile', user.id)) View
+                  a.btn.btn-info.btn-sm.m-1(href=urlFor('watermetersUser', user.id)) Stats
+                  a.btn.btn-success.btn-sm.m-1(href=urlFor('userProfile', user.id)) Profile
                   a.btn.btn-primary.btn-sm.m-1(href=urlFor('editUser', user.id)) Edit
                   if user.Role.name === 'user'
                     a.btn.btn-danger.btn-sm.m-1(href=urlFor('deleteUser', user.id) data-method='delete' data-confirm='Are you sure you want to delete user?') Del
