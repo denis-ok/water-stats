@@ -1,22 +1,6 @@
 import dotenv from 'dotenv';
 import { User, Role, Address, WaterMeter, Readout } from './models';
-
-const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
-
-const genRndNum = () => getRandomInt(1, 25);
-
-const genRndValuesArr = (quantity, startValue = 0) => {
-  if (quantity === 0) {
-    return [];
-  }
-
-  const value = genRndNum() + startValue;
-
-  return [value, ...genRndValuesArr(quantity - 1, value)];
-};
-
-const genValues = quantity => genRndValuesArr(quantity).map(n => ({ value: n }));
-
+import genRndReadouts from './utils/genRandomReadouts';
 
 const initModels = async () => {
   dotenv.config();
@@ -55,8 +39,8 @@ const addWaterMeters = async () => {
 
 
 const addReadouts = async () => {
-  const readouts1 = await Readout.bulkCreate(genValues(5));
-  const readouts2 = await Readout.bulkCreate(genValues(5));
+  const readouts1 = await Readout.bulkCreate(genRndReadouts(10));
+  const readouts2 = await Readout.bulkCreate(genRndReadouts(10));
 
   const watermeter1 = await WaterMeter.findById(1);
   const watermeter2 = await WaterMeter.findById(2);
@@ -65,8 +49,8 @@ const addReadouts = async () => {
   await watermeter2.setReadouts(readouts2);
 
 
-  const readouts3 = await Readout.bulkCreate(genValues(7));
-  const readouts4 = await Readout.bulkCreate(genValues(7));
+  const readouts3 = await Readout.bulkCreate(genRndReadouts(15));
+  const readouts4 = await Readout.bulkCreate(genRndReadouts(15));
 
   const watermeter3 = await WaterMeter.findById(3);
   const watermeter4 = await WaterMeter.findById(4);
@@ -75,8 +59,8 @@ const addReadouts = async () => {
   await watermeter4.setReadouts(readouts4);
 
 
-  const readouts5 = await Readout.bulkCreate(genValues(9));
-  const readouts6 = await Readout.bulkCreate(genValues(9));
+  const readouts5 = await Readout.bulkCreate(genRndReadouts(20));
+  const readouts6 = await Readout.bulkCreate(genRndReadouts(20));
 
   const watermeter5 = await WaterMeter.findById(5);
   const watermeter6 = await WaterMeter.findById(6);
