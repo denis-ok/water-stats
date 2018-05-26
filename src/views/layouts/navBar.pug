@@ -9,9 +9,9 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-light.border-bottom.p-3.px-md-4
     ul.navbar-nav
       if isUserSignedIn()
         li.nav-item.active.px-2
-          a.btn.btn-primary(href='#') Add Meter Readout
+          a.btn.btn-primary(href=urlFor('watermetersUser', getUserId())) Water Meters Statistics
         li.nav-item.active.px-2
-          a.btn.btn-secondary(href='#') Manage Water Meters
+          a.btn.btn-success(href=urlFor('addReadouts', getUserId())) Add Readouts
         li.nav-item.dropdown
           a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown')
             | Profile
