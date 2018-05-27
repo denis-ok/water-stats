@@ -77,7 +77,7 @@ const addReadouts = async () => {
   const readouts8 = await Readout.bulkCreate(genRndReadouts(7), { returning: true });
 
   const watermeter7 = await WaterMeter.findById(7);
-  const watermeter8 = await WaterMeter.findById(7);
+  const watermeter8 = await WaterMeter.findById(8);
 
   await watermeter7.setReadouts(readouts7);
   await watermeter8.setReadouts(readouts8);
@@ -86,11 +86,20 @@ const addReadouts = async () => {
   const readouts9 = await Readout.bulkCreate(genRndReadouts(2), { returning: true });
   const readouts10 = await Readout.bulkCreate(genRndReadouts(2), { returning: true });
 
-  const watermeter9 = await WaterMeter.findById(7);
-  const watermeter10 = await WaterMeter.findById(8);
+  const watermeter9 = await WaterMeter.findById(9);
+  const watermeter10 = await WaterMeter.findById(10);
 
   await watermeter9.setReadouts(readouts9);
   await watermeter10.setReadouts(readouts10);
+
+  const readouts11 = await Readout.bulkCreate(genRndReadouts(1), { returning: true });
+  const readouts12 = await Readout.bulkCreate(genRndReadouts(1), { returning: true });
+
+  const watermeter11 = await WaterMeter.findById(11);
+  const watermeter12 = await WaterMeter.findById(12);
+
+  await watermeter11.setReadouts(readouts11);
+  await watermeter12.setReadouts(readouts12);
 };
 
 
