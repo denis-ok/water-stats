@@ -3,25 +3,72 @@ extends /layouts/application.pug
 block content
   .container
     .py-4.text-center
-      h2 Water Meters List
-
-  .container.mt-4
-    .table-responsive
-      table.table
-        thead
-          tr
-            th Owner
-            th Water Type
-            th Date Added
-        tbody
-          if watermeters
-            each watermeter in watermeters
-              tr
-                td= watermeter.Owner.getFullname()
-                td= watermeter.waterType
-                td= watermeter.createdAt
+      h2 All Water Meters Statistics
 
 
+  .container
+    nav.mb-4
+      #nav-tab.nav.nav-pills.justify-content-center.mb-4(role='tablist')
+        a#nav-all-tab.nav-item.nav-link.active.mb-4(data-toggle='tab' href='#nav-all' role='tab' aria-controls='nav-all' aria-selected='true') All Watermeters
+        a#nav-cold-tab.nav-item.nav-link.mb-4(data-toggle='tab' href='#nav-cold' role='tab' aria-controls='nav-cold' aria-selected='false') Cold Watermeters
+        a#nav-profile-tab.nav-item.nav-link.mb-4(data-toggle='tab' href='#nav-hot' role='tab' aria-controls='nav-hot' aria-selected='false') Hot Watermeters
+    #nav-tabContent.tab-content
 
- 
+      #nav-all.tab-pane.fade.show.active(role='tabpanel' aria-labelledby='nav-all-tab')
+        .container.mt-4
+          .table-responsive
+            table.table.table-hover
+              thead.table-success
+                tr
+                  th Owner
+                  th Water Type
+                  th Average Monthly Consumption
+                  th Total Consumption
+                  th Count of periods 
+              tbody
+                if watermeters
+                  each watermeter in watermeters
+                    tr
+                      td= watermeter.Owner.getFullname()
+                      td= watermeter.waterType
+                      td= watermeter.averageMonthlyConsumption
+                      td= watermeter.totalConsumption
+                      td= watermeter.periodsCount
 
+      #nav-cold.tab-pane.fade.show(role='tabpanel' aria-labelledby='nav-cold-tab')
+        .container.mt-4
+          .table-responsive
+            table.table.table-hover
+              thead.table-primary
+                tr
+                  th Owner
+                  th Average Monthly Consumption
+                  th Total Consumption
+                  th Count of periods 
+              tbody
+                if coldWatermeters
+                  each watermeter in coldWatermeters
+                    tr
+                      td= watermeter.Owner.getFullname()
+                      td= watermeter.averageMonthlyConsumption
+                      td= watermeter.totalConsumption
+                      td= watermeter.periodsCount
+
+      #nav-hot.tab-pane.fade(role='tabpanel' aria-labelledby='nav-hot-tab')
+        .container.mt-4
+          .table-responsive
+            table.table.table-hover
+              thead.table-danger
+                tr
+                  th Owner
+                  th Average Monthly Consumption
+                  th Total Consumption
+                  th Count of periods 
+              tbody
+                if hotWatermeters
+                  each watermeter in hotWatermeters
+                    tr
+                      td= watermeter.Owner.getFullname()
+                      td= watermeter.averageMonthlyConsumption
+                      td= watermeter.totalConsumption
+                      td= watermeter.periodsCount
