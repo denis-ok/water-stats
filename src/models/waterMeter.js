@@ -11,6 +11,16 @@ const getFirstReadoutValue = async (watermeter) => {
   return value;
 };
 
+const getLastReadout = async (watermeter) => {
+  const readouts = await watermeter.getReadouts({
+    limit: 1,
+    order: [['date', 'DESC']],
+  });
+
+  const readout = readouts[0];
+  return readout;
+};
+
 const getLastReadoutValue = async (watermeter) => {
   const readouts = await watermeter.getReadouts({
     limit: 1,
@@ -66,9 +76,9 @@ export default (sequelize, DataTypes) => {
   };
 
   WaterMeter.genTwoWaterMeters = () => {
-    const coldWm = WaterMeter.create({ waterType: 'cold' });
-    const hotWm = WaterMeter.create({ waterType: 'hot' });
-    return [coldWm, hotWm];
+    const wmCold = WaterMeter.create({ waterType: 'cold' });
+    const wmHot = WaterMeter.create({ waterType: 'hot' });
+    return [wmCold, wmHot];
   };
 
   WaterMeter.prototype.getReadoutsCount = function() {
@@ -84,6 +94,11 @@ export default (sequelize, DataTypes) => {
   WaterMeter.prototype.getFirstReadoutValue = function() {
     const watermeter = this;
     return getFirstReadoutValue(watermeter);
+  };
+
+  WaterMeter.prototype.getLastReadout = function() {
+    const watermeter = this;
+    return getLastReadout(watermeter);
   };
 
   WaterMeter.prototype.getLastReadoutValue = function() {
