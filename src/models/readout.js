@@ -50,5 +50,11 @@ export default (sequelize, DataTypes) => {
     return month;
   };
 
+  Readout.prototype.getMonthNum = function() {
+    const date = new Date(this.date);
+    const month = date.getMonth();
+    return month;
+  };
+
   return Readout;
 };
