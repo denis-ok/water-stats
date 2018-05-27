@@ -36,6 +36,9 @@ const addWaterMeters = async () => {
   await WaterMeter.genTwoWaterMeters();
   await WaterMeter.genTwoWaterMeters();
   await WaterMeter.genTwoWaterMeters();
+  await WaterMeter.genTwoWaterMeters();
+  await WaterMeter.genTwoWaterMeters();
+  await WaterMeter.genTwoWaterMeters();
 };
 
 
@@ -48,6 +51,7 @@ const addReadouts = async () => {
 
   await watermeter1.setReadouts(readouts1);
   await watermeter2.setReadouts(readouts2);
+
 
   const readouts3 = await Readout.bulkCreate(genRndReadouts(15), { returning: true });
   const readouts4 = await Readout.bulkCreate(genRndReadouts(15), { returning: true });
@@ -67,6 +71,26 @@ const addReadouts = async () => {
 
   await watermeter5.setReadouts(readouts5);
   await watermeter6.setReadouts(readouts6);
+
+
+  const readouts7 = await Readout.bulkCreate(genRndReadouts(7), { returning: true });
+  const readouts8 = await Readout.bulkCreate(genRndReadouts(7), { returning: true });
+
+  const watermeter7 = await WaterMeter.findById(7);
+  const watermeter8 = await WaterMeter.findById(7);
+
+  await watermeter7.setReadouts(readouts7);
+  await watermeter8.setReadouts(readouts8);
+
+
+  const readouts9 = await Readout.bulkCreate(genRndReadouts(2), { returning: true });
+  const readouts10 = await Readout.bulkCreate(genRndReadouts(2), { returning: true });
+
+  const watermeter9 = await WaterMeter.findById(7);
+  const watermeter10 = await WaterMeter.findById(8);
+
+  await watermeter9.setReadouts(readouts9);
+  await watermeter10.setReadouts(readouts10);
 };
 
 
@@ -79,6 +103,21 @@ const addAddresses = async () => {
   await Address.create({
     house: 22,
     flat: 222,
+  });
+
+  await Address.create({
+    house: 4,
+    flat: 44,
+  });
+
+  await Address.create({
+    house: 5,
+    flat: 55,
+  });
+
+  await Address.create({
+    house: 6,
+    flat: 66,
   });
 };
 
@@ -143,7 +182,38 @@ const addUsers = async () => {
     ],
   });
 
+
   await user3.setWaterMeters([5, 6]);
+
+  const user4 = await User.create({
+    firstName: 'Jeff',
+    lastName: 'Loomis',
+    email: 'loomis@gmail.com',
+    password: 'qqqqqq',
+    addressId: 4,
+  });
+
+  await user4.setWaterMeters([7, 8]);
+
+  const user5 = await User.create({
+    firstName: 'Zakk',
+    lastName: 'Wylde',
+    email: 'zakk@gmail.com',
+    password: 'qqqqqq',
+    addressId: 5,
+  });
+
+  await user5.setWaterMeters([9, 10]);
+
+  const user6 = await User.create({
+    firstName: 'Joe',
+    lastName: 'Satriani',
+    email: 'satch@gmail.com',
+    password: 'qqqqqq',
+    addressId: 6,
+  });
+
+  await user6.setWaterMeters([11, 12]);
 };
 
 
