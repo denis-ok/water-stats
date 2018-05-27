@@ -4,7 +4,7 @@ import {
   getSkippedMonthsBetweenDatesCount,
   genSkippedReadouts,
   createSkippedReadouts,
-} from '../src/utils/Readouts/createSkippedReadouts';
+} from '../src/utils/readouts/createSkippedReadouts';
 
 
 describe('requests', () => {
