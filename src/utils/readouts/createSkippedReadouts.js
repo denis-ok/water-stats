@@ -65,8 +65,7 @@ const createSkippedReadouts = async (readoutModel, currentDateObj, lastReadout) 
     return [];
   }
 
-  const newReadouts = await readoutModel.bulkCreate(skippedReadouts);
-
+  const newReadouts = await readoutModel.bulkCreate(skippedReadouts, { returning: true });
   return newReadouts;
 };
 
