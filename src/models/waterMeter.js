@@ -6,6 +6,10 @@ const getFirstReadoutValue = async (watermeter) => {
     order: [['date', 'ASC']],
   });
 
+  if (readouts.length === 0) {
+    return null;
+  }
+
   const readout = readouts[0];
   const { value } = readout;
   return value;
@@ -17,6 +21,10 @@ const getLastReadout = async (watermeter) => {
     order: [['date', 'DESC']],
   });
 
+  if (readouts.length === 0) {
+    return null;
+  }
+
   const readout = readouts[0];
   return readout;
 };
@@ -26,6 +34,10 @@ const getLastReadoutValue = async (watermeter) => {
     limit: 1,
     order: [['date', 'DESC']],
   });
+
+  if (readouts.length === 0) {
+    return null;
+  }
 
   const readout = readouts[0];
   const { value } = readout;
