@@ -1,10 +1,10 @@
-// import debugLib from 'debug';
+import debugLib from 'debug';
 import { WaterMeter, User } from '../models';
 import buildFormObj from '../utils/formObjectBuilder';
 import { addDiffValuesDesc } from '../utils/addDiffValues';
 
 
-// const debugLog = debugLib('app:controllers:watermeters');
+const debugLog = debugLib('app:controllers:watermeters');
 
 const attachPropsToWatermeter = async (watermeter) => {
   const wm = watermeter;
@@ -12,10 +12,12 @@ const attachPropsToWatermeter = async (watermeter) => {
   const periodsCount = await wm.getPeriodsCount();
   const avgCons = await wm.getAverageMonthlyConsumption();
   const totalConsumption = await wm.getTotalConsumption();
+  // const lastReadout = await wm.getLastReadout();
 
   wm.periodsCount = periodsCount;
   wm.averageMonthlyConsumption = avgCons;
   wm.totalConsumption = totalConsumption;
+  // wm.lastReadout = lastReadout;
 
   return wm;
 };
@@ -37,7 +39,20 @@ const showAllWatermeters = async (ctx) => {
 
 
 const renderAddReadoutsView = async (ctx) => {
-  ctx.render('watermeters/addReadouts', { formObj: buildFormObj({}), title: 'Add Readouts' });
+  const userId = ctx.params.id;
+
+  const wmCold = await WaterMeter.findOne({ where: { userId, waterType: 'cold' } });
+  const wmHot = await WaterMeter.findOne({ where: { userId, waterType: 'hot' } });
+
+  const lastReadoutCold = await wmCold.getLastReadout();
+  const lastReadoutHot = await wmHot.getLastReadout();
+
+  const readouts = [lastReadoutCold, lastReadoutHot];
+  debugLog(readouts);
+
+  ctx.render('watermeters/addReadouts', {
+    lastReadoutCold, lastReadoutHot, formObj: buildFormObj({}), title: 'Add Readouts',
+  });
 };
 
 const renderWatermetersUser = async (ctx) => {

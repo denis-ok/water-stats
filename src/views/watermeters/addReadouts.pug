@@ -1,14 +1,31 @@
 extends /layouts/application.pug
 
 block content
+  - const lastSubmitStr = `Your last submit was in\n${lastReadoutCold.getMonth()} ${lastReadoutCold.getYear()}`
+  - const tryInNextMonth = 'Please try again on next month'
+  - const placeholderStr = 'Type current values (only black numbers)'
   .container.mb-4
     .py-4.text-center
       h2 Add Readouts
-        p.h6 Please type current values of your watermeters
+        p.h6.mt-2= 'Please type your current values of watermetrs and click submit'
+
+
 
 
   .container.col-md-4
-    +formFor({ url: '#', method: 'post' })
-      +input(formObj, 'readoutCold', 'Cold Readout')
-      +input(formObj, 'readoutHot', 'Hot Readout')
-      +button('Submit')
+
+    .card.mb-3
+      .card-header.bg-light= lastSubmitStr
+      .card-body
+        +formFor({ url: '#', method: 'post' })
+          fieldset(disabled=false)
+            .form-group.mb-4
+              h5.text-primary.mb-3 Cold watermeter readout 
+              input#exampleInputEmail1.form-control(name='coldReadout' type='text' aria-describedby='coldReadoutHelp' placeholder=placeholderStr)
+              small#emailHelp.form-text.text-muted.mt-2= `Your last readout of COLD watermeter was: ${lastReadoutCold.value}`
+            hr
+            .form-group.mb-4
+              h5.text-danger.mb-3 Hot watermeter readout 
+              input#exampleInputEmail1.form-control(name='coldReadout' type='text' aria-describedby='coldReadoutHelp' placeholder=placeholderStr)
+              small#emailHelp.form-text.text-muted.mt-2= `Your last readout of HOT watermeter was: ${lastReadoutHot.value}`
+            +button('Submit')
