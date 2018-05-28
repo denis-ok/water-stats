@@ -194,7 +194,7 @@ const createFirstReadouts = async (ctx, next) => {
       await Readout.create(newReadoutCold);
       await Readout.create(newReadoutHot);
       ctx.flash.set('Thank you! Readouts has been created');
-      ctx.redirect('/');
+      ctx.redirect(`/watermeters/user/${userId}`);
     } catch (e) {
       debugLog('Catch error:', e);
       ctx.flash.set('Error, something gone wrong!');
@@ -286,7 +286,7 @@ const createIfNextMonth = async (ctx, next) => {
       await Readout.create(newReadoutCold);
       await Readout.create(newReadoutHot);
       ctx.flash.set('Thank you! Readouts has been created');
-      ctx.redirect('/');
+      ctx.redirect(`/watermeters/user/${userId}`);
     } catch (e) {
       debugLog('Catch error:', e);
       ctx.flash.set('Error, something gone wrong!');
@@ -324,7 +324,7 @@ const createWithSkippedReadouts = async (ctx) => {
     await Readout.create(newReadoutCold);
     await Readout.create(newReadoutHot);
     ctx.flash.set('Thank you! Readouts has been created');
-    ctx.redirect('/');
+    ctx.redirect(`/watermeters/user/${userId}`);
   } catch (e) {
     debugLog('Catch error:', e);
     ctx.flash.set('Error, something gone wrong!');
