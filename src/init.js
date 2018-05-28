@@ -41,6 +41,34 @@ const addWaterMeters = async () => {
   await WaterMeter.genTwoWaterMeters();
 };
 
+const addAdmin = async () => {
+  const user = await User.create({
+    firstName: 'Admin',
+    lastName: 'Admin',
+    email: 'admin@admin.ru',
+    password: 'qqqqqq',
+    roleId: 1,
+    Address: {
+      house: 11,
+      flat: 111,
+    },
+    WaterMeters: [{ waterType: 'cold' }, { waterType: 'hot' }],
+  }, {
+    include: [
+      {
+        model: Address,
+        as: 'Address',
+      },
+      {
+        model: WaterMeter,
+        as: 'WaterMeters',
+      },
+    ],
+  });
+
+  return user;
+};
+
 
 const addReadouts = async () => {
   const readouts1 = await Readout.bulkCreate(genRndReadouts(10), { returning: true });
@@ -92,14 +120,14 @@ const addReadouts = async () => {
   await watermeter9.setReadouts(readouts9);
   await watermeter10.setReadouts(readouts10);
 
-  const readouts11 = await Readout.bulkCreate(genRndReadouts(1), { returning: true });
-  const readouts12 = await Readout.bulkCreate(genRndReadouts(1), { returning: true });
+  // const readouts11 = await Readout.bulkCreate(genRndReadouts(1), { returning: true });
+  // const readouts12 = await Readout.bulkCreate(genRndReadouts(1), { returning: true });
 
-  const watermeter11 = await WaterMeter.findById(11);
-  const watermeter12 = await WaterMeter.findById(12);
+  // const watermeter11 = await WaterMeter.findById(11);
+  // const watermeter12 = await WaterMeter.findById(12);
 
-  await watermeter11.setReadouts(readouts11);
-  await watermeter12.setReadouts(readouts12);
+  // await watermeter11.setReadouts(readouts11);
+  // await watermeter12.setReadouts(readouts12);
 };
 
 
@@ -226,4 +254,4 @@ const addUsers = async () => {
 };
 
 
-export { initModels, addRoles, addUsers, addAddresses, addWaterMeters, addReadouts };
+export { initModels, addAdmin, addRoles, addUsers, addAddresses, addWaterMeters, addReadouts };

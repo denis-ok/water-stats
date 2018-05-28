@@ -12,10 +12,10 @@ const start = async () => {
 
   try {
     await initModels();
+    await addRoles();
     await addWaterMeters();
     await addReadouts();
     await addAddresses();
-    await addRoles();
     await addUsers();
   } catch (e) {
     debugLog(colors.error(e));
