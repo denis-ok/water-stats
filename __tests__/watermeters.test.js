@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { User, Address, WaterMeter, Readout } from '../src/models';
-import { initModels, addRoles } from '../src/init';
+import initModels from '../src/init';
+import { addRoles } from '../src/dummyData';
 import app from '../src';
 import { getGetReqCookie, getSessionCookie, getCookie } from '../src/utils/test/getSessionCookie';
 // import genRndReadouts from '../src/utils/genRandomReadouts';

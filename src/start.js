@@ -1,7 +1,8 @@
 import debugLib from 'debug';
 import colors from './utils/colors';
 import app from './';
-import { initModels, addRoles, addUsers, addAddresses, addWaterMeters, addReadouts } from './init';
+import initModels from './init';
+import { addRoles, addUsers, addAddresses, addWaterMeters, addReadouts } from './dummyData';
 
 const debugLog = debugLib('app:start.js');
 

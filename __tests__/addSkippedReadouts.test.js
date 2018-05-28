@@ -1,5 +1,5 @@
 import { Readout } from '../src/models';
-import { initModels } from '../src/init';
+import initModels from '../src/init';
 import {
   getSkippedMonthsBetweenDatesCount,
   genSkippedReadouts,
