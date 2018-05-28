@@ -36,7 +36,11 @@ const genSkippedReadouts = (currentDateObj, lastReadout) => {
     return [];
   }
 
-  const skippedReadouts = skippedMonthsDates.map(date => ({ date, value: lastReadout.value }));
+  const wmId = lastReadout.waterMeterId;
+
+  const skippedReadouts = skippedMonthsDates.map(date =>
+    ({ date, value: lastReadout.value, waterMeterId: wmId }));
+
   return skippedReadouts;
 };
 
