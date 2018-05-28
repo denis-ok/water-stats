@@ -103,26 +103,6 @@ const hasRightsEditUser = async (ctx, next) => {
 };
 
 
-const checkRights = async (ctx, next) => {
-  const { currentUser } = ctx.state;
-  const profileId = ctx.params.id;
-
-  if (currentUser.isAdmin()) {
-    await next();
-    return;
-  }
-
-  if (Number(currentUser.id) === Number(profileId)) {
-    await next();
-    return;
-  }
-
-  ctx.flash.set('Sorry, you dont have enough rights to do it');
-  ctx.redirect('/');
-  await next();
-};
-
-
 const createUser = async (ctx) => {
   debugLog('Create User middleware...');
   const form = await ctx.request.body;
@@ -245,7 +225,6 @@ export {
   showFormNewUser,
   showFormEditUser,
   hasRightsEditUser,
-  checkRights,
   createUser,
   updateUser,
   deleteUser,

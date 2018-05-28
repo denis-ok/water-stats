@@ -1,10 +1,9 @@
-import { checkAuthMw, hasAdminRights } from '../utils/middlewares';
+import { checkAuthMw, hasAdminRights, checkRights } from '../utils/middlewares';
 import {
   showOneUser,
   showAllUsers,
   showFormNewUser,
   showFormEditUser,
-  checkRights,
   createUser,
   updateUser,
   deleteUser,
