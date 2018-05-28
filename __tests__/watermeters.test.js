@@ -314,7 +314,7 @@ describe('requests', () => {
     expect(res2.text).toEqual(expect.stringContaining('Thank you! Readouts has been created'));
   });
 
-  it('POST, Should NOT add next readouts (value are smaller than last)', async () => {
+  it('POST, Should NOT add next readouts (values are smaller than last)', async () => {
     await addUser();
     const cookieForSet = await getSessionCookie(request, server, userForm);
     const readoutsBefore = await Readout.findAll();
@@ -348,6 +348,113 @@ describe('requests', () => {
 
     const res3 = await request(server).get('/').set('cookie', cookie);
     expect(res3.text).toEqual(expect.stringContaining('Your new readouts cannot be smaller than last'));
+  });
+
+  it('POST, Should NOT add next readouts (too early)', async () => {
+    await addUser();
+
+    const currentDate = Date.now();
+    await Readout.create({ value: 5, date: currentDate, waterMeterId: 1 });
+    await Readout.create({ value: 5, date: currentDate, waterMeterId: 2 });
+
+    const cookieForSet = await getSessionCookie(request, server, userForm);
+    const readoutsBefore = await Readout.findAll();
+
+    const form1 = {
+      coldValue: 10,
+      hotValue: 10,
+    };
+
+    const res1 = await request(server)
+      .post('/watermeters/user/1')
+      .set('cookie', cookieForSet)
+      .send(form1);
+
+    const readoutsAfter = await Readout.findAll();
+
+    expect(res1.status).toEqual(302);
+    expect(readoutsAfter).toHaveLength(readoutsBefore.length);
+
+    const cookie = getCookie(res1);
+
+    const res2 = await request(server).get('/').set('cookie', cookie);
+    expect(res2.text).toEqual(expect.stringContaining('its to early to add new readouts'));
+  });
+
+  it('POST, Should ADD next new readouts (next month)', async () => {
+    await addUser();
+
+    const currentDate = new Date(Date.now());
+
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const currentDay = currentDate.getDay();
+
+    const previousDate = new Date(currentYear, currentMonth - 1, currentDay);
+
+    await Readout.create({ value: 5, date: previousDate, waterMeterId: 1 });
+    await Readout.create({ value: 5, date: previousDate, waterMeterId: 2 });
+
+    const cookieForSet = await getSessionCookie(request, server, userForm);
+    const readoutsBefore = await Readout.findAll();
+
+    const form1 = {
+      coldValue: 10,
+      hotValue: 10,
+    };
+
+    const res1 = await request(server)
+      .post('/watermeters/user/1')
+      .set('cookie', cookieForSet)
+      .send(form1);
+
+    const readoutsAfter = await Readout.findAll();
+
+    expect(res1.status).toEqual(302);
+    expect(readoutsAfter).toHaveLength(readoutsBefore.length + 2);
+
+    const cookie = getCookie(res1);
+
+    const res2 = await request(server).get('/').set('cookie', cookie);
+    expect(res2.text).toEqual(expect.stringContaining('Thank you! Readouts has been created'));
+  });
+
+  it('POST, Should ADD next new readouts (add additional blank readouts for skipped months)', async () => {
+    await addUser();
+
+    const currentDate = new Date(Date.now());
+
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const currentDay = currentDate.getDay();
+
+    const previousDate = new Date(currentYear, currentMonth - 4, currentDay);
+
+    await Readout.create({ value: 5, date: previousDate, waterMeterId: 1 });
+    await Readout.create({ value: 5, date: previousDate, waterMeterId: 2 });
+
+    const cookieForSet = await getSessionCookie(request, server, userForm);
+    const readoutsBefore = await Readout.findAll();
+
+    const form1 = {
+      coldValue: 10,
+      hotValue: 10,
+    };
+
+    const res1 = await request(server)
+      .post('/watermeters/user/1')
+      .set('cookie', cookieForSet)
+      .send(form1);
+
+    const readoutsAfter = await Readout.findAll();
+
+    expect(res1.status).toEqual(302);
+    expect(readoutsAfter).toHaveLength(readoutsBefore.length + 8);
+
+    const cookie = getCookie(res1);
+
+    const res2 = await request(server).get('/').set('cookie', cookie);
+    expect(res2.text).toEqual(expect.stringContaining('Thank you! Readouts has been created'));
   });
 });
 
