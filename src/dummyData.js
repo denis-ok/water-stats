@@ -7,7 +7,6 @@ const addWaterMeters = async () => {
   await WaterMeter.genTwoWaterMeters();
   await WaterMeter.genTwoWaterMeters();
   await WaterMeter.genTwoWaterMeters();
-  await WaterMeter.genTwoWaterMeters();
 };
 
 const addAdmin = async () => {
@@ -50,14 +49,14 @@ const addReadouts = async () => {
   await watermeter2.setReadouts(readouts2);
 
 
-  const readouts3 = await Readout.bulkCreate(genRndReadouts(15), { returning: true });
-  const readouts4 = await Readout.bulkCreate(genRndReadouts(15), { returning: true });
+  // const readouts3 = await Readout.bulkCreate(genRndReadouts(15), { returning: true });
+  // const readouts4 = await Readout.bulkCreate(genRndReadouts(15), { returning: true });
 
-  const watermeter3 = await WaterMeter.findById(3);
-  const watermeter4 = await WaterMeter.findById(4);
+  // const watermeter3 = await WaterMeter.findById(3);
+  // const watermeter4 = await WaterMeter.findById(4);
 
-  await watermeter3.setReadouts(readouts3);
-  await watermeter4.setReadouts(readouts4);
+  // await watermeter3.setReadouts(readouts3);
+  // await watermeter4.setReadouts(readouts4);
 
 
   const readouts5 = await Readout.bulkCreate(genRndReadouts(20), { returning: true });
@@ -88,15 +87,6 @@ const addReadouts = async () => {
 
   await watermeter9.setReadouts(readouts9);
   await watermeter10.setReadouts(readouts10);
-
-  // const readouts11 = await Readout.bulkCreate(genRndReadouts(1), { returning: true });
-  // const readouts12 = await Readout.bulkCreate(genRndReadouts(1), { returning: true });
-
-  // const watermeter11 = await WaterMeter.findById(11);
-  // const watermeter12 = await WaterMeter.findById(12);
-
-  // await watermeter11.setReadouts(readouts11);
-  // await watermeter12.setReadouts(readouts12);
 };
 
 
@@ -210,16 +200,6 @@ const addUsers = async () => {
   });
 
   await user5.setWaterMeters([9, 10]);
-
-  const user6 = await User.create({
-    firstName: 'Joe',
-    lastName: 'Satriani',
-    email: 'satch@gmail.com',
-    password: 'qqqqqq',
-    addressId: 6,
-  });
-
-  await user6.setWaterMeters([11, 12]);
 };
 
 

@@ -7,5 +7,20 @@ This is app to gather water consumption statistics.
 
 [Link to App on Heroku](https://fathomless-dusk-89619.herokuapp.com)
 
-login: admin@admin.ru
-password: qqqqqq
+##### Profiles:
+
+Administartor:
+`login: admin@admin.ru`
+`password: qqqqqq`
+
+New user with default password:
+`login: popov@gmail.com`
+`password: sergeypopov`
+
+User1:
+`login: surdin@mail.ru`
+`password: qqqqqq`
+
+User2:
+`login: loomis@gmail.com`
+`password: qqqqqq`
