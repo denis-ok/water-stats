@@ -1,17 +1,14 @@
 start:
+	npm run webpack
 	npm run babel-node -- ./src/start.js
 
 start-nodemon:
+	npm run webpack
 	npm run nodemon -- --exec babel-node ./src/start.js
 
 start-debug:
+	npm run webpack
 	DEBUG=app:* npm run nodemon -- --watch . --ext '.js, .pug' --exec babel-node ./src/start.js
-
-start-debug-index:
-	DEBUG=app:index* npm run nodemon -- --watch . --ext '.js, .pug' --exec babel-node ./src/start.js
-
-start-debug-users:
-	DEBUG=app:users* npm run nodemon -- --watch . --ext '.js, .pug' --exec babel-node ./src/start.js
 
 db-migrate:
 	npm run sequelize -- db:migrate
