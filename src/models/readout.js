@@ -8,12 +8,12 @@ const numFieldValidation = {
     msg: 'Please use only integer numbers'
   },
   min: {
-    args: 1,
-    msg: 'Readout value can be between 1 and 100'
+    args: 0,
+    msg: 'Readout value can be between 0 and 99999'
   },
   max: {
-    args: 999,
-    msg: 'Readout value can be between 1 and 100'
+    args: 99999,
+    msg: 'Readout value can be between 0 and 99999'
   },
   notEmpty: {
     args: true,

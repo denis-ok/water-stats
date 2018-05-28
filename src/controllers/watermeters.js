@@ -121,6 +121,12 @@ const renderAddReadoutsView = async (ctx) => {
   const lastReadoutCold = await wmCold.getLastReadout();
   const lastReadoutHot = await wmHot.getLastReadout();
 
+  if (lastReadoutCold && lastReadoutHot) {
+    const currentDate = new Date(Date.now());
+    const lastColdDate = new Date(lastReadoutCold.date);
+    ctx.state.isNextPeriod = isNextPeriod(currentDate, lastColdDate);
+  }
+
   ctx.render('watermeters/addReadouts', {
     lastReadoutCold, lastReadoutHot, userId, formObj: buildFormObj({}), title: 'Add Readouts',
   });
@@ -148,6 +154,12 @@ const validateInput = async (ctx, next) => {
 
   if (!Number.isInteger(coldValue) || !Number.isInteger(hotValue)) {
     ctx.flash.set('Please use only integer numbers in forms');
+    ctx.redirect(`/watermeters/user/${userId}/addreadouts`);
+    return;
+  }
+
+  if (coldValue > 99999 || hotValue > 99999) {
+    ctx.flash.set('Maximum value for fields is 99999');
     ctx.redirect(`/watermeters/user/${userId}/addreadouts`);
     return;
   }
