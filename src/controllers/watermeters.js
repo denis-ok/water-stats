@@ -2,11 +2,28 @@ import debugLib from 'debug';
 import { WaterMeter, User, Readout } from '../models';
 import buildFormObj from '../utils/formObjectBuilder';
 import { addDiffValuesDesc } from '../utils/addDiffValues';
-// import { debuglog } from 'util';
-// import { createSkippedReadouts } from '../utils/readouts/createSkippedReadouts';
+import isNextPeriod from '../utils/isNextPeriod';
+import { createSkippedReadouts } from '../utils/readouts/createSkippedReadouts';
 
 const debugLog = debugLib('app:controllers:watermeters');
 
+const getMonthsDiffBetweenDates = (currentDateObj, previousDateObj) => {
+  if (currentDateObj <= previousDateObj) {
+    return 0;
+  }
+
+  const currentMonth = currentDateObj.getMonth();
+  const currentYear = currentDateObj.getFullYear();
+
+  const previousMonth = previousDateObj.getMonth();
+  const previousYear = previousDateObj.getFullYear();
+
+  const skippedYearMonthsOnly = (currentYear - previousYear) * 12;
+  const skippedMonthsOnly = Math.abs(currentMonth - previousMonth);
+
+  const skippedMonthsCount = Math.abs(skippedYearMonthsOnly - skippedMonthsOnly);
+  return skippedMonthsCount;
+};
 
 const attachPropsToWatermeter = async (watermeter) => {
   const wm = watermeter;
@@ -24,6 +41,7 @@ const attachPropsToWatermeter = async (watermeter) => {
 
 const attachPropsToWatermeterColl = wmColl =>
   Promise.all(wmColl.map(wm => attachPropsToWatermeter(wm)));
+
 
 const showAllWatermeters = async (ctx) => {
   const coldWatermeters = await WaterMeter.findAll({
@@ -93,6 +111,7 @@ const renderWatermetersUser = async (ctx) => {
   ctx.render('watermeters/show', { watermeters, readouts: coll, title: 'Stats' });
 };
 
+
 const renderAddReadoutsView = async (ctx) => {
   const userId = ctx.params.id;
 
@@ -106,6 +125,7 @@ const renderAddReadoutsView = async (ctx) => {
     lastReadoutCold, lastReadoutHot, userId, formObj: buildFormObj({}), title: 'Add Readouts',
   });
 };
+
 
 const validateInput = async (ctx, next) => {
   const userId = ctx.params.id;
@@ -134,6 +154,7 @@ const validateInput = async (ctx, next) => {
 
   await next();
 };
+
 
 const createFirstReadouts = async (ctx, next) => {
   const userId = ctx.params.id;
@@ -173,6 +194,31 @@ const createFirstReadouts = async (ctx, next) => {
   await next();
 };
 
+
+const checkDate = async (ctx, next) => {
+  const userId = ctx.params.id;
+
+  const wmCold = await WaterMeter.findOne({ where: { userId, waterType: 'cold' } });
+  // const wmHot = await WaterMeter.findOne({ where: { userId, waterType: 'hot' } });
+
+  const lastReadoutCold = await wmCold.getLastReadout();
+  // const lastReadoutHot = await wmHot.getLastReadout();
+
+  const currentDate = new Date(Date.now());
+
+  const lastColdDate = new Date(lastReadoutCold.date);
+  // const lastHotDate = new Date(lastReadoutHot.date);
+
+  if (isNextPeriod(currentDate, lastColdDate) === false) {
+    ctx.flash.set('Sorry, its to early to add new readouts, please try again on next month');
+    ctx.redirect(`/watermeters/user/${userId}/addreadouts`);
+    return;
+  }
+
+  await next();
+};
+
+
 const checkGreaterThenLatest = async (ctx, next) => {
   const userId = ctx.params.id;
   const form = await ctx.request.body;
@@ -199,44 +245,80 @@ const checkGreaterThenLatest = async (ctx, next) => {
 };
 
 
-const createReadouts = async (ctx) => {
+const createIfNextMonth = async (ctx, next) => {
   const userId = ctx.params.id;
-  // const form = await ctx.request.body;
 
-  // const coldValue = Number(form.coldValue);
-  // const hotValue = Number(form.hotValue);
+  const form = await ctx.request.body;
+  const coldValue = Number(form.coldValue);
+  const hotValue = Number(form.hotValue);
 
-  // const wmCold = await WaterMeter.findOne({ where: { userId, waterType: 'cold' } });
-  // const wmHot = await WaterMeter.findOne({ where: { userId, waterType: 'hot' } });
+  const wmCold = await WaterMeter.findOne({ where: { userId, waterType: 'cold' } });
+  const wmHot = await WaterMeter.findOne({ where: { userId, waterType: 'hot' } });
 
-  // const lastReadoutCold = await wmCold.getLastReadout();
+  const lastReadoutCold = await wmCold.getLastReadout();
   // const lastReadoutHot = await wmHot.getLastReadout();
 
-  // const lastColdVal = Number(lastReadoutCold.value);
-  // const lastHotVal = Number(lastReadoutHot.value);
+  const currentDate = new Date(Date.now());
 
+  const lastColdDate = new Date(lastReadoutCold.date);
+  // const lastHotDate = new Date(lastReadoutHot.date);
 
-  // const skippedReadoutsCold = await createSkippedReadouts(Readout, currentDate, lastReadoutCold);
-  // const skippedReadoutsHot = await createSkippedReadouts(Readout, currentDate, lastReadoutHot);
+  const monthsDiff = getMonthsDiffBetweenDates(currentDate, lastColdDate);
 
-  // const newReadoutCold = { value: coldValue, date: currentDate.toString() };
-  // const newReadoutHot = { value: hotValue, date: currentDate.toString() };
+  if (monthsDiff === 1) {
+    const newReadoutCold = { value: coldValue, date: currentDate, waterMeterId: wmCold.id };
+    const newReadoutHot = { value: hotValue, date: currentDate, waterMeterId: wmHot.id };
 
-  // try {
-  //   debugLog('Try to save readouts...');
-  //   await Readout.save(newReadoutCold);
-  //   await Readout.save(newReadoutHot);
-  //   ctx.flash.set('Thank you! Readouts has been created');
-  //   ctx.redirect('/');
-  // } catch (e) {
-  //   debugLog('Catch error:', e);
-  //   ctx.flash.set('Error, something gone wrong!');
-  //   ctx.redirect(`/watermeters/user/${userId}/addreadouts`);
-  // }
+    try {
+      debugLog('Try to save readouts...');
+      await Readout.create(newReadoutCold);
+      await Readout.create(newReadoutHot);
+      ctx.flash.set('Thank you! Readouts has been created');
+      ctx.redirect('/');
+    } catch (e) {
+      debugLog('Catch error:', e);
+      ctx.flash.set('Error, something gone wrong!');
+      ctx.redirect(`/watermeters/user/${userId}/addreadouts`);
+    }
+    return;
+  }
 
-  ctx.redirect(`/watermeters/user/${userId}/addreadouts`);
+  await next();
 };
 
+
+const createWithSkippedReadouts = async (ctx) => {
+  const userId = ctx.params.id;
+  const form = await ctx.request.body;
+
+  const coldValue = Number(form.coldValue);
+  const hotValue = Number(form.hotValue);
+
+  const wmCold = await WaterMeter.findOne({ where: { userId, waterType: 'cold' } });
+  const wmHot = await WaterMeter.findOne({ where: { userId, waterType: 'hot' } });
+
+  const lastReadoutCold = await wmCold.getLastReadout();
+  const lastReadoutHot = await wmHot.getLastReadout();
+
+  const currentDate = new Date(Date.now());
+
+  const newReadoutCold = { value: coldValue, date: currentDate, waterMeterId: wmCold.id };
+  const newReadoutHot = { value: hotValue, date: currentDate, waterMeterId: wmHot.id };
+
+  try {
+    debugLog('Try to save readouts...');
+    await createSkippedReadouts(Readout, currentDate, lastReadoutCold);
+    await createSkippedReadouts(Readout, currentDate, lastReadoutHot);
+    await Readout.create(newReadoutCold);
+    await Readout.create(newReadoutHot);
+    ctx.flash.set('Thank you! Readouts has been created');
+    ctx.redirect('/');
+  } catch (e) {
+    debugLog('Catch error:', e);
+    ctx.flash.set('Error, something gone wrong!');
+    ctx.redirect(`/watermeters/user/${userId}/addreadouts`);
+  }
+};
 
 export {
   showAllWatermeters,
@@ -244,7 +326,9 @@ export {
   renderWatermetersUser,
   validateInput,
   createFirstReadouts,
+  checkDate,
   checkGreaterThenLatest,
-  createReadouts,
+  createIfNextMonth,
+  createWithSkippedReadouts,
 };
 
