@@ -209,5 +209,145 @@ describe('requests', () => {
     const res3 = await request(server).get('/').set('cookie', cookie);
     expect(res3.text).toEqual(expect.stringContaining('Sorry, you dont have enough rights to do it'));
   });
+
+  it('POST, Should not add new readouts (form is empty)', async () => {
+    await addUser();
+    const cookieForSet = await getSessionCookie(request, server, userForm);
+    const readoutsBefore = await Readout.findAll();
+
+    const form = {
+      coldValue: '',
+      hotValue: 2,
+    };
+
+    const res1 = await request(server)
+      .post('/watermeters/user/1')
+      .set('cookie', cookieForSet)
+      .send(form);
+
+    const readoutsAfter = await Readout.findAll();
+
+    expect(res1.status).toEqual(302);
+    expect(readoutsBefore).toHaveLength(readoutsAfter.length);
+
+    const cookie = getCookie(res1);
+
+    const res2 = await request(server).get('/').set('cookie', cookie);
+    expect(res2.text).toEqual(expect.stringContaining('Fields cannot be blank'));
+  });
+
+  it('POST, Should not add new readouts (forms has letters)', async () => {
+    await addUser();
+    const cookieForSet = await getSessionCookie(request, server, userForm);
+    const readoutsBefore = await Readout.findAll();
+
+    const form = {
+      coldValue: 'a1',
+      hotValue: 2,
+    };
+
+    const res1 = await request(server)
+      .post('/watermeters/user/1')
+      .set('cookie', cookieForSet)
+      .send(form);
+
+    const readoutsAfter = await Readout.findAll();
+
+    expect(res1.status).toEqual(302);
+    expect(readoutsBefore).toHaveLength(readoutsAfter.length);
+
+    const cookie = getCookie(res1);
+
+    const res2 = await request(server).get('/').set('cookie', cookie);
+    expect(res2.text).toEqual(expect.stringContaining('Please type only numbers in forms'));
+  });
+
+  it('POST, Should not add new readouts (not integer number)', async () => {
+    await addUser();
+    const cookieForSet = await getSessionCookie(request, server, userForm);
+    const readoutsBefore = await Readout.findAll();
+
+    const form = {
+      coldValue: 1.2,
+      hotValue: 3,
+    };
+
+    const res1 = await request(server)
+      .post('/watermeters/user/1')
+      .set('cookie', cookieForSet)
+      .send(form);
+
+    const readoutsAfter = await Readout.findAll();
+
+    expect(res1.status).toEqual(302);
+    expect(readoutsBefore).toHaveLength(readoutsAfter.length);
+
+    const cookie = getCookie(res1);
+
+    const res2 = await request(server).get('/').set('cookie', cookie);
+    expect(res2.text).toEqual(expect.stringContaining('Please use only integer numbers in forms'));
+  });
+
+  it('POST, Should add first new readouts', async () => {
+    await addUser();
+    const cookieForSet = await getSessionCookie(request, server, userForm);
+    const readoutsBefore = await Readout.findAll();
+
+    const form = {
+      coldValue: 123,
+      hotValue: 456,
+    };
+
+    const res1 = await request(server)
+      .post('/watermeters/user/1')
+      .set('cookie', cookieForSet)
+      .send(form);
+
+    const readoutsAfter = await Readout.findAll();
+
+    expect(res1.status).toEqual(302);
+    expect(readoutsAfter).toHaveLength(readoutsBefore.length + 2);
+
+    const cookie = getCookie(res1);
+
+    const res2 = await request(server).get('/').set('cookie', cookie);
+    expect(res2.text).toEqual(expect.stringContaining('Thank you! Readouts has been created'));
+  });
+
+  it('POST, Should NOT add next readouts (value are smaller than last)', async () => {
+    await addUser();
+    const cookieForSet = await getSessionCookie(request, server, userForm);
+    const readoutsBefore = await Readout.findAll();
+
+    const form1 = {
+      coldValue: 10,
+      hotValue: 20,
+    };
+
+    const res1 = await request(server)
+      .post('/watermeters/user/1')
+      .set('cookie', cookieForSet)
+      .send(form1);
+
+    const form2 = {
+      coldValue: 9,
+      hotValue: 19,
+    };
+
+    const res2 = await request(server)
+      .post('/watermeters/user/1')
+      .set('cookie', cookieForSet)
+      .send(form2);
+
+    const readoutsAfter = await Readout.findAll();
+
+    expect(res1.status).toEqual(302);
+    expect(readoutsAfter).toHaveLength(readoutsBefore.length + 2);
+
+    const cookie = getCookie(res2);
+
+    const res3 = await request(server).get('/').set('cookie', cookie);
+    expect(res3.text).toEqual(expect.stringContaining('Your new readouts cannot be smaller than last'));
+  });
 });
 

@@ -1,11 +1,11 @@
-// import debugLib from 'debug';
-import { WaterMeter, User } from '../models';
+import debugLib from 'debug';
+import { WaterMeter, User, Readout } from '../models';
 import buildFormObj from '../utils/formObjectBuilder';
 import { addDiffValuesDesc } from '../utils/addDiffValues';
 // import { debuglog } from 'util';
 // import { createSkippedReadouts } from '../utils/readouts/createSkippedReadouts';
 
-// const debugLog = debugLib('app:controllers:watermeters');
+const debugLog = debugLib('app:controllers:watermeters');
 
 
 const attachPropsToWatermeter = async (watermeter) => {
@@ -107,18 +107,15 @@ const renderAddReadoutsView = async (ctx) => {
   });
 };
 
-const createReadouts = async (ctx) => {
+const validateInput = async (ctx, next) => {
   const userId = ctx.params.id;
   const form = await ctx.request.body;
 
-  const wmCold = await WaterMeter.findOne({ where: { userId, waterType: 'cold' } });
-  const wmHot = await WaterMeter.findOne({ where: { userId, waterType: 'hot' } });
-
-  const lastReadoutCold = await wmCold.getLastReadout();
-  const lastReadoutHot = await wmHot.getLastReadout();
-
-  const lastColdVal = Number(lastReadoutCold.value);
-  const lastHotVal = Number(lastReadoutHot.value);
+  if (form.coldValue === '' || form.hotValue === '') {
+    ctx.flash.set('Fields cannot be blank');
+    ctx.redirect(`/watermeters/user/${userId}/addreadouts`);
+    return;
+  }
 
   const coldValue = Number(form.coldValue);
   const hotValue = Number(form.hotValue);
@@ -129,13 +126,95 @@ const createReadouts = async (ctx) => {
     return;
   }
 
+  if (!Number.isInteger(coldValue) || !Number.isInteger(hotValue)) {
+    ctx.flash.set('Please use only integer numbers in forms');
+    ctx.redirect(`/watermeters/user/${userId}/addreadouts`);
+    return;
+  }
+
+  await next();
+};
+
+const createFirstReadouts = async (ctx, next) => {
+  const userId = ctx.params.id;
+  const form = await ctx.request.body;
+
+  const coldValue = Number(form.coldValue);
+  const hotValue = Number(form.hotValue);
+
+
+  const wmCold = await WaterMeter.findOne({ where: { userId, waterType: 'cold' } });
+  const wmHot = await WaterMeter.findOne({ where: { userId, waterType: 'hot' } });
+
+  const lastReadoutCold = await wmCold.getLastReadout();
+  const lastReadoutHot = await wmHot.getLastReadout();
+
+  if (!lastReadoutCold && !lastReadoutHot) {
+    debugLog('User is adding first readouts...');
+
+    const currentDate = Date.now();
+    const newReadoutCold = { value: coldValue, date: currentDate, waterMeterId: wmCold.id };
+    const newReadoutHot = { value: hotValue, date: currentDate, waterMeterId: wmHot.id };
+
+    try {
+      debugLog('Try to save readouts...');
+      await Readout.create(newReadoutCold);
+      await Readout.create(newReadoutHot);
+      ctx.flash.set('Thank you! Readouts has been created');
+      ctx.redirect('/');
+    } catch (e) {
+      debugLog('Catch error:', e);
+      ctx.flash.set('Error, something gone wrong!');
+      ctx.redirect(`/watermeters/user/${userId}/addreadouts`);
+    }
+    return;
+  }
+
+  await next();
+};
+
+const checkGreaterThenLatest = async (ctx, next) => {
+  const userId = ctx.params.id;
+  const form = await ctx.request.body;
+
+  const coldValue = Number(form.coldValue);
+  const hotValue = Number(form.hotValue);
+
+  const wmCold = await WaterMeter.findOne({ where: { userId, waterType: 'cold' } });
+  const wmHot = await WaterMeter.findOne({ where: { userId, waterType: 'hot' } });
+
+  const lastReadoutCold = await wmCold.getLastReadout();
+  const lastReadoutHot = await wmHot.getLastReadout();
+
+  const lastColdVal = Number(lastReadoutCold.value);
+  const lastHotVal = Number(lastReadoutHot.value);
+
   if (coldValue < lastColdVal || hotValue < lastHotVal) {
     ctx.flash.set('Your new readouts cannot be smaller than last');
     ctx.redirect(`/watermeters/user/${userId}/addreadouts`);
     return;
   }
 
-  // const currentDate = Date.now();
+  await next();
+};
+
+
+const createReadouts = async (ctx) => {
+  const userId = ctx.params.id;
+  // const form = await ctx.request.body;
+
+  // const coldValue = Number(form.coldValue);
+  // const hotValue = Number(form.hotValue);
+
+  // const wmCold = await WaterMeter.findOne({ where: { userId, waterType: 'cold' } });
+  // const wmHot = await WaterMeter.findOne({ where: { userId, waterType: 'hot' } });
+
+  // const lastReadoutCold = await wmCold.getLastReadout();
+  // const lastReadoutHot = await wmHot.getLastReadout();
+
+  // const lastColdVal = Number(lastReadoutCold.value);
+  // const lastHotVal = Number(lastReadoutHot.value);
+
 
   // const skippedReadoutsCold = await createSkippedReadouts(Readout, currentDate, lastReadoutCold);
   // const skippedReadoutsHot = await createSkippedReadouts(Readout, currentDate, lastReadoutHot);
@@ -163,6 +242,9 @@ export {
   showAllWatermeters,
   renderAddReadoutsView,
   renderWatermetersUser,
+  validateInput,
+  createFirstReadouts,
+  checkGreaterThenLatest,
   createReadouts,
 };
 
