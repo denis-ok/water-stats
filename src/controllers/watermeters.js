@@ -2,9 +2,11 @@
 import { WaterMeter, User } from '../models';
 import buildFormObj from '../utils/formObjectBuilder';
 import { addDiffValuesDesc } from '../utils/addDiffValues';
+// import { debuglog } from 'util';
 // import { createSkippedReadouts } from '../utils/readouts/createSkippedReadouts';
 
 // const debugLog = debugLib('app:controllers:watermeters');
+
 
 const attachPropsToWatermeter = async (watermeter) => {
   const wm = watermeter;
@@ -50,8 +52,7 @@ const showAllWatermeters = async (ctx) => {
     b.averageMonthlyConsumption - a.averageMonthlyConsumption);
 
   const watermeters = preparedColdWatermeters.reduce((acc, wm, i) =>
-    [...acc, wm, preparedHotWatermeters[i]]);
-
+    [...acc, wm, preparedHotWatermeters[i]], []);
 
   ctx.render('watermeters/index', {
     watermeters,

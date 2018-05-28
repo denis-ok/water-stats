@@ -25,6 +25,26 @@ const hasAdminRights = async (ctx, next) => {
 };
 
 
+const checkRights = async (ctx, next) => {
+  const { currentUser } = ctx.state;
+  const paramsId = ctx.params.id;
+
+  if (currentUser.isAdmin()) {
+    await next();
+    return;
+  }
+
+  if (Number(currentUser.id) === Number(paramsId)) {
+    await next();
+    return;
+  }
+
+  ctx.flash.set('Sorry, you dont have enough rights to do it');
+  ctx.redirect('/');
+  await next();
+};
+
+
 const checkDefaultPassword = () => async (ctx, next) => {
   const { url } = ctx.request;
   const { currentUser } = ctx.state;
@@ -56,4 +76,4 @@ const checkDefaultPassword = () => async (ctx, next) => {
 };
 
 
-export { checkAuthMw, hasAdminRights, checkDefaultPassword };
+export { checkAuthMw, hasAdminRights, checkRights, checkDefaultPassword };

@@ -1,3 +1,4 @@
+import { checkAuthMw, hasAdminRights, checkRights } from '../utils/middlewares';
 import {
   showAllWatermeters,
   renderAddReadoutsView,
@@ -6,8 +7,10 @@ import {
 } from '../controllers/watermeters';
 
 export default (router) => {
-  router.get('watermetersAll', '/watermeters', showAllWatermeters);
-  router.get('watermetersUser', '/watermeters/user/:id', renderWatermetersUser);
-  router.get('addReadouts', '/watermeters/user/:id/addreadouts', renderAddReadoutsView);
-  router.post('createReadouts', '/watermeters/user/:id', createReadouts);
+  const checkAuth = checkAuthMw();
+
+  router.get('watermetersAll', '/watermeters', checkAuth, hasAdminRights, showAllWatermeters);
+  router.get('watermetersUser', '/watermeters/user/:id', checkAuth, checkRights, renderWatermetersUser);
+  router.get('addReadouts', '/watermeters/user/:id/addreadouts', checkAuth, checkRights, renderAddReadoutsView);
+  router.post('createReadouts', '/watermeters/user/:id', checkAuth, checkRights, createReadouts);
 };
