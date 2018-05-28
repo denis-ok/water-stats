@@ -121,6 +121,10 @@ const renderAddReadoutsView = async (ctx) => {
   const lastReadoutCold = await wmCold.getLastReadout();
   const lastReadoutHot = await wmHot.getLastReadout();
 
+  if (!lastReadoutCold && !lastReadoutCold) {
+    ctx.state.isNextPeriod = true;
+  }
+
   if (lastReadoutCold && lastReadoutHot) {
     const currentDate = new Date(Date.now());
     const lastColdDate = new Date(lastReadoutCold.date);
