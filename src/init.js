@@ -14,14 +14,14 @@ const initModels = async () => {
   Role.hasMany(User, { foreignKey: 'roleId', as: 'Users' });
   User.belongsTo(Role, { foreignKey: 'roleId', as: 'Role' });
 
-  User.belongsTo(Address, { foreignKey: 'addressId', as: 'Address' });
-  Address.hasOne(User, { foreignKey: 'addressId', as: 'User' });
+  User.belongsTo(Address, { foreignKey: 'addressId', as: 'Address', onDelete: 'CASCADE' });
+  Address.hasOne(User, { foreignKey: 'addressId', as: 'User', onDelete: 'CASCADE' });
 
-  User.hasMany(WaterMeter, { foreignKey: 'userId', as: 'WaterMeters' });
-  WaterMeter.belongsTo(User, { foreignKey: 'userId', as: 'Owner' });
+  User.hasMany(WaterMeter, { foreignKey: 'userId', as: 'WaterMeters', onDelete: 'CASCADE' });
+  WaterMeter.belongsTo(User, { foreignKey: 'userId', as: 'Owner', onDelete: 'CASCADE' });
 
-  WaterMeter.hasMany(Readout, { foreignKey: 'waterMeterId', as: 'Readouts' });
-  Readout.belongsTo(WaterMeter, { foreignKey: 'waterMeterId', as: 'WaterMeter' });
+  WaterMeter.hasMany(Readout, { foreignKey: 'waterMeterId', as: 'Readouts', onDelete: 'CASCADE' });
+  Readout.belongsTo(WaterMeter, { foreignKey: 'waterMeterId', as: 'WaterMeter', onDelete: 'CASCADE' });
 
   await User.sync({ force: true });
   await Role.sync({ force: true });
