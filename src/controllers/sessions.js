@@ -17,7 +17,6 @@ const loginAttempt = async (ctx) => {
     },
   });
 
-
   if (user && user.passwordEncrypted === encrypt(password)) {
     ctx.session.userId = user.id;
 
@@ -26,8 +25,8 @@ const loginAttempt = async (ctx) => {
     return;
   }
 
-  ctx.flash.set('Please try again, email or Password were wrong');
-  ctx.redirect('sessions/new');
+  ctx.flash.set('Please try again, email or password were wrong');
+  ctx.redirect('session/new');
 };
 
 const deleteSession = async (ctx) => {
