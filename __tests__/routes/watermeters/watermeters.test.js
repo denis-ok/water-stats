@@ -1,10 +1,10 @@
 import request from 'supertest';
-import { User, Address, WaterMeter, Readout } from '../src/models';
-import initModels from '../src/init';
-import { addRoles } from '../src/dummyData';
-import app from '../src';
-import { getGetReqCookie, getSessionCookie, getCookie } from '../src/utils/test/getSessionCookie';
-// import genRndReadouts from '../src/utils/genRandomReadouts';
+import { User, Address, WaterMeter, Readout } from '../../../src/models';
+import initModels from '../../../src/init';
+import { addRoles } from '../../../src/dummyData';
+import app from '../../../src';
+import { getGetReqCookie, getSessionCookie, getCookie } from '../../../src/utils/test/getSessionCookie';
+
 
 const adminForm = {
   email: 'admin@admin.ru',
@@ -16,16 +16,6 @@ const userForm = {
   password: 'qqqqqq',
 };
 
-// const addReadouts = async () => {
-//   const readouts1 = await Readout.bulkCreate(genRndReadouts(10), { returning: true });
-//   const readouts2 = await Readout.bulkCreate(genRndReadouts(10), { returning: true });
-
-//   const watermeter1 = await WaterMeter.findById(1);
-//   const watermeter2 = await WaterMeter.findById(2);
-
-//   await watermeter1.setReadouts(readouts1);
-//   await watermeter2.setReadouts(readouts2);
-// };
 
 const addAdmin = async () => {
   const user = await User.create({

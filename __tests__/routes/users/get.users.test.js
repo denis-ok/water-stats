@@ -1,9 +1,9 @@
 import request from 'supertest';
-import { User, Address, WaterMeter, Readout } from '../src/models';
-import initModels from '../src/init';
-import { addRoles } from '../src/dummyData';
-import app from '../src';
-import { getGetReqCookie, getSessionCookie, getCookie } from '../src/utils/test/getSessionCookie';
+import { User, Address, WaterMeter, Readout } from '../../../src/models';
+import initModels from '../../../src/init';
+import { addRoles } from '../../../src/dummyData';
+import app from '../../../src';
+import { getSessionCookie, getCookie } from '../../../src/utils/test/getSessionCookie';
 
 
 const adminForm = {
@@ -15,6 +15,14 @@ const userForm = {
   email: 'user@user.ru',
   password: 'qqqqqq',
 };
+
+// const newUserForm = {
+//   email: 'aaa@bbb.ru',
+//   firstName: 'User',
+//   lastName: 'User',
+//   house: '1',
+//   flat: '1',
+// };
 
 const addAdmin = async () => {
   const user = await User.create({
@@ -95,13 +103,64 @@ describe('requests', () => {
     done();
   });
 
+  it('GET, Should NOT show user profile (not logged in)', async () => {
+    await addUser();
+    const res1 = await request(server).get('/users/1');
+    expect(res1.status).toEqual(302);
+
+    const cookie = getCookie(res1);
+    const res2 = await request(server).get('/').set('cookie', cookie);
+    expect(res2.text).toEqual(expect.stringContaining('You must be logged in'));
+  });
+
+  it('GET, Should NOT show user profile (not own profile)', async () => {
+    await addAdmin();
+    await addUser();
+
+    const sessionCookie = await getSessionCookie(request, server, userForm);
+
+    const res1 = await request(server).get('/users/1').set('cookie', sessionCookie);
+    expect(res1.status).toEqual(302);
+
+    const cookie = getCookie(res1);
+    const res2 = await request(server).get('/').set('cookie', cookie);
+    expect(res2.text).toEqual(expect.stringContaining('Sorry, you dont have enough rights to do it'));
+  });
+
+  it('GET, Should show user profile (own profile)', async () => {
+    await addAdmin();
+    await addUser();
+
+    const sessionCookie = await getSessionCookie(request, server, userForm);
+
+    const res1 = await request(server).get('/users/2').set('cookie', sessionCookie);
+    expect(res1.status).toEqual(200);
+    expect(res1.text).toEqual(expect.stringContaining('John Brown'));
+  });
+
+  it('GET, Should show user profiles (as admin)', async () => {
+    await addAdmin();
+    await addUser();
+
+    const sessionCookie = await getSessionCookie(request, server, adminForm);
+
+    const res1 = await request(server).get('/users/1').set('cookie', sessionCookie);
+    expect(res1.status).toEqual(200);
+    expect(res1.text).toEqual(expect.stringContaining('Admin Admin'));
+
+    const res2 = await request(server).get('/users/2').set('cookie', sessionCookie);
+    expect(res2.status).toEqual(200);
+    expect(res2.text).toEqual(expect.stringContaining('John Brown'));
+  });
 
   it('GET, Should NOT show users list page (not logged in)', async () => {
     const res1 = await request(server).get('/users');
+
     expect(res1.status).toEqual(302);
 
-    const cookieForSet = await getGetReqCookie(request, server, '/watermeters');
-    const res2 = await request(server).get('/').set('cookie', cookieForSet);
+    const cookie = getCookie(res1);
+
+    const res2 = await request(server).get('/').set('cookie', cookie);
     expect(res2.text).toEqual(expect.stringContaining('You must be logged in'));
   });
 
@@ -130,8 +189,8 @@ describe('requests', () => {
     const res1 = await request(server).get('/users/1/edit');
     expect(res1.status).toEqual(302);
 
-    const cookieForSet = await getGetReqCookie(request, server, '/watermeters');
-    const res2 = await request(server).get('/').set('cookie', cookieForSet);
+    const cookie = getCookie(res1);
+    const res2 = await request(server).get('/').set('cookie', cookie);
     expect(res2.text).toEqual(expect.stringContaining('You must be logged in'));
   });
 
