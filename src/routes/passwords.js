@@ -40,7 +40,7 @@ const changePasswordAttempt = async (ctx) => {
 
 
 export default (router) => {
-  const checkAuth = checkAuthMw('You must be logged to change password');
+  const checkAuth = checkAuthMw('You must be logged in to change password');
 
   router
     .get('changePassword', '/passwords/new', checkAuth, showNewPasswordForm)
