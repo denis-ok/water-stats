@@ -31,6 +31,9 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       validate: numFieldValidation,
     },
+    userId: {
+      type: DataTypes.INTEGER,
+    },
   }, {
     indexes: [
         {

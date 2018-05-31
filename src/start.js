@@ -15,9 +15,9 @@ const start = async () => {
     await initModels();
     await addRoles();
     await addWaterMeters();
-    await addReadouts();
-    await addAddresses();
     await addUsers();
+    await addAddresses();
+    await addReadouts();
   } catch (e) {
     debugLog(colors.error(e));
   }

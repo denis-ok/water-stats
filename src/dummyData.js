@@ -90,33 +90,6 @@ const addReadouts = async () => {
 };
 
 
-const addAddresses = async () => {
-  await Address.create({
-    house: 1,
-    flat: 11,
-  });
-
-  await Address.create({
-    house: 22,
-    flat: 222,
-  });
-
-  await Address.create({
-    house: 4,
-    flat: 44,
-  });
-
-  await Address.create({
-    house: 5,
-    flat: 55,
-  });
-
-  await Address.create({
-    house: 6,
-    flat: 66,
-  });
-};
-
 const addRoles = async () => {
   await Role.create({
     name: 'admin',
@@ -136,7 +109,6 @@ const addUsers = async () => {
     lastName: 'Brown',
     email: 'admin@admin.ru',
     password: process.env.WM_PASSWORD || 'qqqqqq',
-    addressId: 1,
     roleId: 1,
   });
 
@@ -148,7 +120,6 @@ const addUsers = async () => {
     lastName: 'Popov',
     email: 'popov@gmail.com',
     password: 'sergeypopov',
-    addressId: 2,
   });
 
   await user2.setWaterMeters([3, 4]);
@@ -186,7 +157,6 @@ const addUsers = async () => {
     lastName: 'Loomis',
     email: 'loomis@gmail.com',
     password: 'qqqqqq',
-    addressId: 4,
   });
 
   await user4.setWaterMeters([7, 8]);
@@ -196,10 +166,35 @@ const addUsers = async () => {
     lastName: 'Wylde',
     email: 'zakk@gmail.com',
     password: 'qqqqqq',
-    addressId: 5,
   });
 
   await user5.setWaterMeters([9, 10]);
+};
+
+const addAddresses = async () => {
+  await Address.create({
+    house: 1,
+    flat: 11,
+    userId: 1,
+  });
+
+  await Address.create({
+    house: 22,
+    flat: 222,
+    userId: 2,
+  });
+
+  await Address.create({
+    house: 4,
+    flat: 44,
+    userId: 4,
+  });
+
+  await Address.create({
+    house: 5,
+    flat: 55,
+    userId: 5,
+  });
 };
 
 

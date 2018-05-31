@@ -14,8 +14,8 @@ const initModels = async () => {
   Role.hasMany(User, { foreignKey: 'roleId', as: 'Users' });
   User.belongsTo(Role, { foreignKey: 'roleId', as: 'Role' });
 
-  User.belongsTo(Address, { foreignKey: 'addressId', as: 'Address', onDelete: 'CASCADE' });
-  Address.hasOne(User, { foreignKey: 'addressId', as: 'User', onDelete: 'CASCADE' });
+  Address.belongsTo(User, { foreignKey: 'userId', as: 'User', onDelete: 'CASCADE' });
+  User.hasOne(Address, { foreignKey: 'userId', as: 'Address', onDelete: 'CASCADE' });
 
   User.hasMany(WaterMeter, { foreignKey: 'userId', as: 'WaterMeters', onDelete: 'CASCADE' });
   WaterMeter.belongsTo(User, { foreignKey: 'userId', as: 'Owner', onDelete: 'CASCADE' });
