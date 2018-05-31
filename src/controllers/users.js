@@ -134,7 +134,6 @@ const createUser = async (ctx) => {
     }],
   });
 
-
   try {
     debugLog('Try to save...');
     await userFull.save();
@@ -144,6 +143,7 @@ const createUser = async (ctx) => {
     ctx.redirect('/');
   } catch (e) {
     debugLog('Catch error:', e);
+    await userFull.destroy();
     ctx.render('users/new', {
       formObjUser: buildFormObj(user, e),
       formObjAddr: buildFormObj(address, replaceAddressErrMsg(e)),
