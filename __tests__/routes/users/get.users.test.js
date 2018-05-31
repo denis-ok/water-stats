@@ -208,11 +208,42 @@ describe('requests', () => {
   it('GET, Should show edit user page (admin)', async () => {
     await addAdmin();
     const cookieForSet = await getSessionCookie(request, server, adminForm);
-    const res1 = await request(server).get('/users').set('cookie', cookieForSet);
+    const res1 = await request(server).get('/users/1/edit').set('cookie', cookieForSet);
 
     expect(res1.status).toEqual(200);
     expect(res1.text).toEqual(expect.stringContaining('Edit Profile'));
     expect(res1.text).toEqual(expect.stringContaining('admin@admin.ru'));
+  });
+
+  it('GET, Should NOT show new user page (not logged in)', async () => {
+    const res1 = await request(server).get('/users/new');
+    expect(res1.status).toEqual(302);
+
+    const cookie = getCookie(res1);
+    const res2 = await request(server).get('/').set('cookie', cookie);
+    expect(res2.text).toEqual(expect.stringContaining('You must be logged in'));
+  });
+
+  it('GET, Should NOT show new user page (not admin)', async () => {
+    await addUser();
+    const cookieForSet = await getSessionCookie(request, server, userForm);
+    const res1 = await request(server).get('/users/new').set('cookie', cookieForSet);
+
+    expect(res1.status).toEqual(302);
+
+    const cookie = getCookie(res1);
+    const res2 = await request(server).get('/').set('cookie', cookie);
+    expect(res2.text).toEqual(expect.stringContaining('Sorry, only administrator can do it'));
+  });
+
+  it('GET, Should show new user page (admin)', async () => {
+    await addAdmin();
+    const cookieForSet = await getSessionCookie(request, server, adminForm);
+    const res1 = await request(server).get('/users/new').set('cookie', cookieForSet);
+
+    expect(res1.status).toEqual(200);
+    expect(res1.text).toEqual(expect.stringContaining('Add New User'));
+    expect(res1.text).toEqual(expect.stringContaining('User address'));
   });
 });
 
