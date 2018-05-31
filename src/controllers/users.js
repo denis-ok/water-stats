@@ -89,20 +89,6 @@ const showFormEditUser = async (ctx) => {
 };
 
 
-const hasRightsEditUser = async (ctx, next) => {
-  const { userId } = ctx.session;
-  const { id } = await ctx.params;
-
-  if (Number(userId) === Number(id)) {
-    await next();
-    return;
-  }
-
-  ctx.flash.set('Sorry, you can edit only your own profile');
-  ctx.redirect('/');
-};
-
-
 const createUser = async (ctx) => {
   debugLog('Create User middleware...');
   const form = await ctx.request.body;
@@ -224,7 +210,6 @@ export {
   showAllUsers,
   showFormNewUser,
   showFormEditUser,
-  hasRightsEditUser,
   createUser,
   updateUser,
   deleteUser,
