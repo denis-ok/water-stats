@@ -159,5 +159,195 @@ describe('requests', () => {
 
     expect(res2.text).toEqual(expect.stringContaining('User has been created'));
   });
+
+  it('POST, should NOT add new user (email already exist)', async () => {
+    const newUserFormWrong = {
+      email: 'user@user.ru',
+      firstName: 'User',
+      lastName: 'User',
+      house: '1234',
+      flat: '1234',
+    };
+
+    await addAdmin();
+    await addUser();
+
+    const usersBefore = await User.findAll();
+    const addressesBefore = await Address.findAll();
+    const waterMetersBefore = await WaterMeter.findAll();
+
+    const sessionCookie = await getSessionCookie(request, server, adminForm);
+    const res1 = await request(server)
+      .post('/users')
+      .set('cookie', sessionCookie)
+      .send(newUserFormWrong);
+
+    const usersAfter = await User.findAll();
+    const addressesAfter = await Address.findAll();
+    const waterMetersAfter = await WaterMeter.findAll();
+
+    expect(usersBefore).toHaveLength(usersAfter.length);
+    expect(addressesBefore).toHaveLength(addressesAfter.length);
+    expect(waterMetersBefore).toHaveLength(waterMetersAfter.length);
+
+    expect(usersAfter).toHaveLength(2);
+    expect(addressesAfter).toHaveLength(2);
+    expect(waterMetersAfter).toHaveLength(4);
+
+    expect(res1.status).toEqual(200);
+    expect(res1.text).toEqual(expect.stringContaining('Sorry, user with this email already registered'));
+  });
+
+  it('POST, should NOT add new user (address already exist)', async () => {
+    await addAdmin();
+    await addUser();
+
+    const usersBefore = await User.findAll();
+    const addressesBefore = await Address.findAll();
+    const waterMetersBefore = await WaterMeter.findAll();
+
+    const newUserFormWrong = {
+      email: 'user1@user.ru',
+      firstName: 'User',
+      lastName: 'User',
+      house: '12',
+      flat: '345',
+    };
+
+    const sessionCookie = await getSessionCookie(request, server, adminForm);
+    const res1 = await request(server)
+      .post('/users')
+      .set('cookie', sessionCookie)
+      .send(newUserFormWrong);
+
+    const usersAfter = await User.findAll();
+    const addressesAfter = await Address.findAll();
+    const waterMetersAfter = await WaterMeter.findAll();
+
+    expect(usersBefore).toHaveLength(usersAfter.length);
+    expect(addressesBefore).toHaveLength(addressesAfter.length);
+    expect(waterMetersBefore).toHaveLength(waterMetersAfter.length);
+
+    expect(usersAfter).toHaveLength(2);
+    expect(addressesAfter).toHaveLength(2);
+    expect(waterMetersAfter).toHaveLength(4);
+
+    expect(res1.status).toEqual(200);
+    expect(res1.text).toEqual(expect.stringContaining('Address (house and flat) already used by another user'));
+  });
+
+  it('POST, should NOT add new user (validation error, wrong email)', async () => {
+    await addAdmin();
+    await addUser();
+
+    const usersBefore = await User.findAll();
+    const addressesBefore = await Address.findAll();
+    const waterMetersBefore = await WaterMeter.findAll();
+
+    const newUserFormWrong = {
+      email: 'user',
+      firstName: 'User',
+      lastName: 'User',
+      house: '5',
+      flat: '5',
+    };
+
+    const sessionCookie = await getSessionCookie(request, server, adminForm);
+    const res1 = await request(server)
+      .post('/users')
+      .set('cookie', sessionCookie)
+      .send(newUserFormWrong);
+
+    const usersAfter = await User.findAll();
+    const addressesAfter = await Address.findAll();
+    const waterMetersAfter = await WaterMeter.findAll();
+
+    expect(usersBefore).toHaveLength(usersAfter.length);
+    expect(addressesBefore).toHaveLength(addressesAfter.length);
+    expect(waterMetersBefore).toHaveLength(waterMetersAfter.length);
+
+    expect(usersAfter).toHaveLength(2);
+    expect(addressesAfter).toHaveLength(2);
+    expect(waterMetersAfter).toHaveLength(4);
+
+    expect(res1.status).toEqual(200);
+    expect(res1.text).toEqual(expect.stringContaining('Email you have entered is not valid'));
+  });
+
+  it('POST, should NOT add new user (validation error, wrong name)', async () => {
+    await addAdmin();
+    await addUser();
+
+    const usersBefore = await User.findAll();
+    const addressesBefore = await Address.findAll();
+    const waterMetersBefore = await WaterMeter.findAll();
+
+    const newUserFormWrong = {
+      email: 'user1@mail.ru',
+      firstName: '1',
+      lastName: 'User',
+      house: '5',
+      flat: '5',
+    };
+
+    const sessionCookie = await getSessionCookie(request, server, adminForm);
+    const res1 = await request(server)
+      .post('/users')
+      .set('cookie', sessionCookie)
+      .send(newUserFormWrong);
+
+    const usersAfter = await User.findAll();
+    const addressesAfter = await Address.findAll();
+    const waterMetersAfter = await WaterMeter.findAll();
+
+    expect(usersBefore).toHaveLength(usersAfter.length);
+    expect(addressesBefore).toHaveLength(addressesAfter.length);
+    expect(waterMetersBefore).toHaveLength(waterMetersAfter.length);
+
+    expect(usersAfter).toHaveLength(2);
+    expect(addressesAfter).toHaveLength(2);
+    expect(waterMetersAfter).toHaveLength(4);
+
+    expect(res1.status).toEqual(200);
+    expect(res1.text).toEqual(expect.stringContaining('First or Lastname must use only Alphabet letters'));
+  });
+
+  it('POST, should NOT add new user (validation error, name length)', async () => {
+    await addAdmin();
+    await addUser();
+
+    const usersBefore = await User.findAll();
+    const addressesBefore = await Address.findAll();
+    const waterMetersBefore = await WaterMeter.findAll();
+
+    const newUserFormWrong = {
+      email: 'user1@mail.ru',
+      firstName: 'a',
+      lastName: 'User',
+      house: '5',
+      flat: '5',
+    };
+
+    const sessionCookie = await getSessionCookie(request, server, adminForm);
+    const res1 = await request(server)
+      .post('/users')
+      .set('cookie', sessionCookie)
+      .send(newUserFormWrong);
+
+    const usersAfter = await User.findAll();
+    const addressesAfter = await Address.findAll();
+    const waterMetersAfter = await WaterMeter.findAll();
+
+    expect(usersBefore).toHaveLength(usersAfter.length);
+    expect(addressesBefore).toHaveLength(addressesAfter.length);
+    expect(waterMetersBefore).toHaveLength(waterMetersAfter.length);
+
+    expect(usersAfter).toHaveLength(2);
+    expect(addressesAfter).toHaveLength(2);
+    expect(waterMetersAfter).toHaveLength(4);
+
+    expect(res1.status).toEqual(200);
+    expect(res1.text).toEqual(expect.stringContaining('First or Lastname length must be from 3 to 16 letters'));
+  });
 });
 
