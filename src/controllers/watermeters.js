@@ -1,5 +1,5 @@
 import debugLib from 'debug';
-import { WaterMeter, User, Readout } from '../models';
+import { sequelize, WaterMeter, User, Readout } from '../models';
 import buildFormObj from '../utils/formObjectBuilder';
 import { addDiffValuesDesc } from '../utils/addDiffValues';
 import isNextPeriod from '../utils/isNextPeriod';
@@ -195,8 +195,11 @@ const createFirstReadouts = async (ctx, next) => {
 
     try {
       debugLog('Try to save readouts...');
-      await Readout.create(newReadoutCold);
-      await Readout.create(newReadoutHot);
+      await sequelize.transaction(async (t) => {
+        await Readout.create(newReadoutCold, { transaction: t });
+        await Readout.create(newReadoutHot, { transaction: t });
+      });
+
       ctx.flash.set('Thank you! Readouts has been created');
       ctx.redirect(`/watermeters/user/${userId}`);
     } catch (e) {
@@ -287,8 +290,12 @@ const createIfNextMonth = async (ctx, next) => {
 
     try {
       debugLog('Try to save readouts...');
-      await Readout.create(newReadoutCold);
-      await Readout.create(newReadoutHot);
+
+      await sequelize.transaction(async (t) => {
+        await Readout.create(newReadoutCold, { transaction: t });
+        await Readout.create(newReadoutHot, { transaction: t });
+      });
+
       ctx.flash.set('Thank you! Readouts has been created');
       ctx.redirect(`/watermeters/user/${userId}`);
     } catch (e) {
@@ -323,10 +330,15 @@ const createWithSkippedReadouts = async (ctx) => {
 
   try {
     debugLog('Try to save readouts...');
+
     await createSkippedReadouts(Readout, currentDate, lastReadoutCold);
     await createSkippedReadouts(Readout, currentDate, lastReadoutHot);
-    await Readout.create(newReadoutCold);
-    await Readout.create(newReadoutHot);
+
+    await sequelize.transaction(async (t) => {
+      await Readout.create(newReadoutCold, { transaction: t });
+      await Readout.create(newReadoutHot, { transaction: t });
+    });
+
     ctx.flash.set('Thank you! Readouts has been created');
     ctx.redirect(`/watermeters/user/${userId}`);
   } catch (e) {
